@@ -22,3 +22,13 @@ export const toFixedHalfDown = (num: number, precision: number) => {
 export const toFixedDown = (num: number, precision: number) => {
   return Number(BigNumber(num).toFixed(precision, BigNumber.ROUND_DOWN).toString());
 }
+
+// to fixed without rounding
+export const toFixed = (num: number, precision: number) => {
+  const s = num.toString();
+  const [integer, decimal] = s.split(".");
+  if (decimal) {
+    return Number(`${integer}.${decimal.slice(0, precision)}`);
+  }
+  return Number(s);
+}

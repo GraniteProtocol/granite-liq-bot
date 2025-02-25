@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { formatUnits, parseUnits, toFixedDown, toFixedHalfDown } from "./units";
+import { formatUnits, parseUnits, toFixed, toFixedDown, toFixedHalfDown } from "./units";
 
 test("formatUnits", () => {
     expect(formatUnits(124000000, 6)).toEqual(124);
@@ -23,4 +23,11 @@ test("toFixedDown", () => {
     expect(toFixedDown(124.821123, 2)).toEqual(124.82);
     expect(toFixedDown(124.824123, 2)).toEqual(124.82);
     expect(toFixedDown(124.825123, 2)).toEqual(124.82);
+})
+
+test("toFixed", () => {
+    expect(toFixed(124.821123, 3)).toEqual(124.821);
+    expect(toFixed(124.824423, 3)).toEqual(124.824);
+    expect(toFixed(124.825923, 3)).toEqual(124.825);
+    expect(toFixed(11, 3)).toEqual(11);
 })

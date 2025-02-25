@@ -1,5 +1,5 @@
 import { cvToJSON } from "@stacks/transactions";
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import type { AssetInfo, BorrowerStatusEntity } from "granite-liq-bot-common";
 import { options } from "../../alex";
 import type { PriceFeedResponse } from "../../client/pyth";
@@ -22,7 +22,6 @@ test("liquidationBatchCv", () => {
                 collateralPrice: 0,
                 minCollateralExpected: 0,
                 minCollateralExpectedBn: 0,
-                minCollateralExpectedFinalBn: 0
             }
         },
         {
@@ -38,7 +37,6 @@ test("liquidationBatchCv", () => {
                 collateralPrice: 0,
                 minCollateralExpected: 0,
                 minCollateralExpectedBn: 0,
-                minCollateralExpectedFinalBn: 0
             }
         }
     ];
@@ -341,12 +339,6 @@ describe("swapOutCv", () => {
 
 describe("makeLiquidationBatch", () => {
 
-    mock.module("../../constants", () => {
-        return {
-            REPAY_ADJUSTMENT: 5
-        }
-    });
-
     const priceFeed: PriceFeedResponse = {
         "attestation": "0",
         "items": {
@@ -451,18 +443,17 @@ describe("makeLiquidationBatch", () => {
         expect(batch).toEqual([
             {
                 user: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                liquidatorRepayAmount: 201000000,
-                minCollateralExpected: 2049,
+                liquidatorRepayAmount: 212500000,
+                minCollateralExpected: 2176,
                 details: {
                     repayAmount: 2.125664850930649,
-                    repayAmountAdjusted: 2.01,
-                    repayAmountAdjustedBn: 201000000,
-                    repayAmountFinalBn: 201000000,
-                    repayAmountFinal: 2.01,
+                    repayAmountAdjusted: 2.125,
+                    repayAmountAdjustedBn: 212500000,
+                    repayAmountFinalBn: 212500000,
+                    repayAmountFinal: 2.125,
                     collateralPrice: 97652.95458695,
-                    minCollateralExpected: 0.00002058,
-                    minCollateralExpectedBn: 2058,
-                    minCollateralExpectedFinalBn: 2049,
+                    minCollateralExpected: 0.00002176,
+                    minCollateralExpectedBn: 2176,
                 },
             }
         ]);
@@ -503,33 +494,31 @@ describe("makeLiquidationBatch", () => {
         expect(batch).toEqual([
             {
                 user: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                liquidatorRepayAmount: 201000000,
-                minCollateralExpected: 2049,
+                liquidatorRepayAmount: 212500000,
+                minCollateralExpected: 2176,
                 details: {
                     repayAmount: 2.125664850930649,
-                    repayAmountAdjusted: 2.01,
-                    repayAmountAdjustedBn: 201000000,
-                    repayAmountFinalBn: 201000000,
-                    repayAmountFinal: 2.01,
+                    repayAmountAdjusted: 2.125,
+                    repayAmountAdjustedBn: 212500000,
+                    repayAmountFinalBn: 212500000,
+                    repayAmountFinal: 2.125,
                     collateralPrice: 97652.95458695,
-                    minCollateralExpected: 0.00002058,
-                    minCollateralExpectedBn: 2058,
-                    minCollateralExpectedFinalBn: 2049,
+                    minCollateralExpected: 0.00002176,
+                    minCollateralExpectedBn: 2176,
                 },
             }, {
                 user: "ST2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX53H4AZFA",
-                liquidatorRepayAmount: 439000000,
-                minCollateralExpected: 4477,
+                liquidatorRepayAmount: 462300000,
+                minCollateralExpected: 4734,
                 details: {
                     repayAmount: 4.623614857930649,
-                    repayAmountAdjusted: 4.39,
-                    repayAmountAdjustedBn: 439000000,
-                    repayAmountFinalBn: 439000000,
-                    repayAmountFinal: 4.39,
+                    repayAmountAdjusted: 4.623,
+                    repayAmountAdjustedBn: 462300000,
+                    repayAmountFinalBn: 462300000,
+                    repayAmountFinal: 4.623,
                     collateralPrice: 97652.95458695,
-                    minCollateralExpected: 0.00004495,
-                    minCollateralExpectedBn: 4495,
-                    minCollateralExpectedFinalBn: 4477,
+                    minCollateralExpected: 0.00004734,
+                    minCollateralExpectedBn: 4734,
                 },
             }
         ]);
@@ -579,51 +568,49 @@ describe("makeLiquidationBatch", () => {
         ];
 
         const batch = makeLiquidationBatch(marketAsset, collateralAsset, borrowers, priceFeed);
+
         expect(batch).toEqual([
             {
                 user: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                liquidatorRepayAmount: 201000000,
-                minCollateralExpected: 2049,
+                liquidatorRepayAmount: 212500000,
+                minCollateralExpected: 2176,
                 details: {
                     repayAmount: 2.125664850930649,
-                    repayAmountAdjusted: 2.01,
-                    repayAmountAdjustedBn: 201000000,
-                    repayAmountFinalBn: 201000000,
-                    repayAmountFinal: 2.01,
+                    repayAmountAdjusted: 2.125,
+                    repayAmountAdjustedBn: 212500000,
+                    repayAmountFinalBn: 212500000,
+                    repayAmountFinal: 2.125,
                     collateralPrice: 97652.95458695,
-                    minCollateralExpected: 0.00002058,
-                    minCollateralExpectedBn: 2058,
-                    minCollateralExpectedFinalBn: 2049,
+                    minCollateralExpected: 0.00002176,
+                    minCollateralExpectedBn: 2176,
                 },
             }, {
                 user: "ST2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX53H4AZFA",
-                liquidatorRepayAmount: 439000000,
-                minCollateralExpected: 4477,
+                liquidatorRepayAmount: 462300000,
+                minCollateralExpected: 4734,
                 details: {
                     repayAmount: 4.623614857930649,
-                    repayAmountAdjusted: 4.39,
-                    repayAmountAdjustedBn: 439000000,
-                    repayAmountFinalBn: 439000000,
-                    repayAmountFinal: 4.39,
+                    repayAmountAdjusted: 4.623,
+                    repayAmountAdjustedBn: 462300000,
+                    repayAmountFinalBn: 462300000,
+                    repayAmountFinal: 4.623,
                     collateralPrice: 97652.95458695,
-                    minCollateralExpected: 0.00004495,
-                    minCollateralExpectedBn: 4495,
-                    minCollateralExpectedFinalBn: 4477,
+                    minCollateralExpected: 0.00004734,
+                    minCollateralExpectedBn: 4734,
                 },
             }, {
                 user: "ST2VWSP59FEVDXXYGGWYG90M3N67ZST2AGPA3P2HC",
-                liquidatorRepayAmount: 1360000000,
-                minCollateralExpected: 13870,
+                liquidatorRepayAmount: 1325200000,
+                minCollateralExpected: 13570,
                 details: {
                     repayAmount: 17.9313224,
-                    repayAmountAdjusted: 17.03,
-                    repayAmountAdjustedBn: 1703000000,
-                    repayAmountFinalBn: 1360000000,
-                    repayAmountFinal: 13.6,
+                    repayAmountAdjusted: 17.931,
+                    repayAmountAdjustedBn: 1793100000,
+                    repayAmountFinalBn: 1325200000,
+                    repayAmountFinal: 13.252,
                     collateralPrice: 97652.95458695,
-                    minCollateralExpected: 0.00013926,
-                    minCollateralExpectedBn: 13926,
-                    minCollateralExpectedFinalBn: 13870,
+                    minCollateralExpected: 0.0001357,
+                    minCollateralExpectedBn: 13570,
                 },
             }
         ]);
@@ -673,21 +660,21 @@ describe("makeLiquidationBatch", () => {
         ];
 
         const batch = makeLiquidationBatch(marketAsset, collateralAsset, borrowers, priceFeed);
+
         expect(batch).toEqual([
             {
                 user: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
                 liquidatorRepayAmount: 2000000000,
-                minCollateralExpected: 20398,
+                minCollateralExpected: 20480,
                 details: {
                     repayAmount: 21.125664850930647,
-                    repayAmountAdjusted: 20.06,
-                    repayAmountAdjustedBn: 2006000000,
+                    repayAmountAdjusted: 21.125,
+                    repayAmountAdjustedBn: 2112500000,
                     repayAmountFinalBn: 2000000000,
                     repayAmountFinal: 20,
                     collateralPrice: 97652.95458695,
                     minCollateralExpected: 0.0002048,
                     minCollateralExpectedBn: 20480,
-                    minCollateralExpectedFinalBn: 20398,
                 },
             }
         ])
