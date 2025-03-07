@@ -43,7 +43,7 @@ const ContractPage = (_: RouteComponentProps) => {
                 "::first-letter": { textTransform: "capitalize" },
               }}
             >
-              {t(`${contract.network.toWellFormed()} Borrowers`)}
+              {t(`${contract.network?.toWellFormed()} Borrowers`)}
             </Typography>
             <BorrowersList network={contract.network} />
           </>

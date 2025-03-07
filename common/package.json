@@ -12,8 +12,6 @@
     "dependencies": {
         "@stacks/network": "^7.0.2",
         "@stacks/stacks-blockchain-api-types": "^7.14.1",
-        "@stacks/transactions": "^7.0.2",
-        "@types/bignumber.js": "^5.0.4",
-        "bignumber.js": "^9.1.2"
+        "@stacks/transactions": "^7.0.2"
     }
 }
