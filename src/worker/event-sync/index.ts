@@ -14,10 +14,7 @@ const logger = createLogger("event-sync");
 const TRACKED_CONTRACTS = [
   CONTRACTS.mainnet.borrower,
   CONTRACTS.mainnet.state,
-  CONTRACTS.mainnet.liquidator,
-  CONTRACTS.testnet.borrower,
-  CONTRACTS.testnet.state,
-  CONTRACTS.testnet.liquidator,
+  CONTRACTS.mainnet.liquidator
 ]
 
 const processEvents = (network: NetworkName, event: TransactionEventSmartContractLog) => {
