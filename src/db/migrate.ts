@@ -92,6 +92,12 @@ export const migrateDb = async () => {
         createDb();
     }
 
+    const contract_hash = (dbCon.prepare('SELECT "value" FROM kv_store WHERE "key"=?', ['contract_hash']).get() as { value: string }).value;
+    if(Bun.hash(JSON.stringify(CONTRACTS)).toString() !== contract_hash){
+        throw new Error('Contracts changed. Delete database and sync again.');
+    }
+  
+
     let dbVer = Number((dbCon.prepare('SELECT "value" FROM kv_store where "key"=? LIMIT 1', ["db_ver"]).get() as { value: string }).value);
 
     /*
