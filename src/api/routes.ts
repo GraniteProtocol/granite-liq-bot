@@ -45,6 +45,10 @@ export const routes = {
             return errorResponse(error);
         }
 
+        if (network !== 'mainnet') {
+            return errorResponse('Only mainnet allowed');
+        }
+
         if (getContractList({ filters: { network } }).length > 0) {
             return errorResponse(`A contract for ${network} already exists`);
         }
