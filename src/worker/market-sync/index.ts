@@ -36,7 +36,7 @@ const lastSyncTs = {
 const syncMarketState = async () => {
     dbCon.run("BEGIN");
 
-    for (const network of ["mainnet", "testnet"] as NetworkName[]) {
+    for (const network of ["mainnet"] as NetworkName[]) {
         const now = epoch();
 
         if (lastSyncTs[network].irParams < now - 600) {
