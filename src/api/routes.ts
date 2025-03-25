@@ -45,9 +45,7 @@ export const routes = {
             return errorResponse(error);
         }
 
-
-        if ((await getContractList({ filters: { network } })).length > 0) {
-
+        if (getContractList({ filters: { network } }).length > 0) {
             return errorResponse(`A contract for ${network} already exists`);
         }
 
