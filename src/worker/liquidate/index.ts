@@ -56,7 +56,7 @@ const worker = async (network: NetworkName) => {
         orderBy: 'total_repay_amount DESC'
     });
 
-    const marketState = getMarketState(network);
+    const marketState = getMarketState();
     const liquidationPremium = marketState.collateralParams[collateralAsset.address].liquidationPremium;
     if (!liquidationPremium) {
         throw new Error("Collateral liquidation premium not found");

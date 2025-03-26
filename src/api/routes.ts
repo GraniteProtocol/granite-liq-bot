@@ -102,14 +102,14 @@ export const routes = {
 
         let marketAssetInfo;
         try {
-            marketAssetInfo = await getAssetInfo(marketAsset, network);
+            marketAssetInfo = await getAssetInfo(marketAsset);
         } catch (error) {
             return errorResponse('Could not fetch market asset info');
         }
 
         let collateralAssetInfo;
         try {
-            collateralAssetInfo = await getAssetInfo(collateralAsset, network);
+            collateralAssetInfo = await getAssetInfo(collateralAsset);
         } catch (error) {
             return errorResponse('Could not fetch collateral asset info');
         }

@@ -15,69 +15,58 @@ import { epoch } from "../../util";
 const logger = createLogger("market-sync");
 
 const lastSyncTs = {
-    "mainnet": {
-        irParams: 0,
-        lpParams: 0,
-        accrueInterestParams: 0,
-        debtParams: 0,
-        collateralParams: 0,
-        priceFeed: 0,
-    },
-    "testnet": {
-        irParams: 0,
-        lpParams: 0,
-        accrueInterestParams: 0,
-        debtParams: 0,
-        collateralParams: 0,
-        priceFeed: 0,
-    }
+    irParams: 0,
+    lpParams: 0,
+    accrueInterestParams: 0,
+    debtParams: 0,
+    collateralParams: 0,
+    priceFeed: 0,
 }
 
 const syncMarketState = async () => {
     dbCon.run("BEGIN");
 
-    for (const network of ["mainnet"] as NetworkName[]) {
+   
         const now = epoch();
 
-        if (lastSyncTs[network].irParams < now - 600) {
-            const val = await getIrParams(network);
-            setIrParamsLocal(network, val);
+        if (lastSyncTs.irParams < now - 600) {
+            const val = await getIrParams();
+            setIrParamsLocal(val);
             // logger.info(`setIrParamsLocal: ${network} ${JSON.stringify(val)}`);
-            lastSyncTs[network].irParams = now;
+            lastSyncTs.irParams = now;
         }
 
-        if (lastSyncTs[network].lpParams < now - 30) {
-            const val = await getLpParams(network);
-            setLpParamsLocal(network, val);
+        if (lastSyncTs.lpParams < now - 30) {
+            const val = await getLpParams();
+            setLpParamsLocal(val);
             //logger.info(`setLpParamsLocal: ${network} ${JSON.stringify(val)}`);
-            lastSyncTs[network].lpParams = now;
+            lastSyncTs.lpParams = now;
         }
 
-        if (lastSyncTs[network].accrueInterestParams < now - 30) {
-            const val = await getAccrueInterestParams(network);
-            setAccrueInterestParamsLocal(network, val);
+        if (lastSyncTs.accrueInterestParams < now - 30) {
+            const val = await getAccrueInterestParams();
+            setAccrueInterestParamsLocal(val);
             // logger.info(`setAccrueInterestParamsLocal: ${network} ${JSON.stringify(val)}`);
-            lastSyncTs[network].accrueInterestParams = now;
+            lastSyncTs.accrueInterestParams = now;
         }
 
-        if (lastSyncTs[network].debtParams < now - 30) {
-            const val = await getDebtParams(network);
-            setDebtParamsLocal(network, val);
+        if (lastSyncTs.debtParams < now - 30) {
+            const val = await getDebtParams();
+            setDebtParamsLocal(val);
             // logger.info(`setDebtParamsLocal: ${network} ${JSON.stringify(val)}`);
-            lastSyncTs[network].debtParams = now;
+            lastSyncTs.debtParams = now;
         }
 
-        if (lastSyncTs[network].collateralParams < now - 30) {
-            const collaterals = CONTRACTS.collaterals;
+        if (lastSyncTs.collateralParams < now - 30) {
             const collateralParams: Record<string, CollateralParams> = {};
-            for (const collateral of collaterals.filter(c => getNetworkNameFromAddress(c) === network)) {
-                collateralParams[collateral] = await getCollateralParams(collateral, network);
+            for (const collateral of CONTRACTS.collaterals) {
+                collateralParams[collateral] = await getCollateralParams(collateral);
             }
-            setCollateralParamsLocal(network, collateralParams);
+            setCollateralParamsLocal(collateralParams);
             // logger.info(`setCollateralParamsLocal: ${network} ${JSON.stringify(collateralParams)}`);
-            lastSyncTs[network].collateralParams = now;
+            lastSyncTs.collateralParams = now;
         }
-    }
+
 
     dbCon.run("COMMIT");
     

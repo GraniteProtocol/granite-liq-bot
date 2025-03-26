@@ -4,10 +4,7 @@ import type { Ticker } from "./client/pyth";
 
 export const IR_PARAMS_SCALING_FACTOR = 12;
 
-export const MARKET_ASSET_DECIMAL = {
-    "mainnet": 6,
-    "testnet": 8
-}
+export const MARKET_ASSET_DECIMAL = 6;
 
 const PRODUCTION_CONTRACTS = {
     "borrower": "SP35E2BBMDT2Y1HB0NTK139YBGYV3PAPK3WA8BRNA.borrower-v1",

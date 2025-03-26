@@ -45,10 +45,10 @@ export const worker = async () => {
     for (const contract of contracts) {
         await handleContractLocks(contract);
 
-        const balance1 = await getAssetBalance(contract.marketAsset!.address, contract.id, contract.network);
+        const balance1 = await getAssetBalance(contract.marketAsset!.address, contract.id);
         dbCon.run("UPDATE contract SET market_asset_balance = $1 WHERE id = $2", [balance1, contract.id]);
 
-        const balance2 = await getAssetBalance(contract.collateralAsset!.address, contract.id, contract.network);
+        const balance2 = await getAssetBalance(contract.collateralAsset!.address, contract.id);
         dbCon.run("UPDATE contract SET collateral_asset_balance = $1 WHERE id = $2", [balance2, contract.id])
     }
     dbCon.run("COMMIT");

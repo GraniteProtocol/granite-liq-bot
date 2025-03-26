@@ -16,7 +16,7 @@ export const worker = async () => {
     }
 
     const network = borrower.network as NetworkName;
-    const marketState = getMarketState(borrower.network as NetworkName);
+    const marketState = getMarketState();
 
     const collateralsDeposited: Record<string, number> = {}
     for (const collateral of borrower.collaterals) {

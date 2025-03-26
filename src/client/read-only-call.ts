@@ -4,7 +4,7 @@ import { CONTRACTS } from "../constants";
 import type { AccrueInterestParams, BorrowerPositionEntity, CollateralParams, DebtParams, InterestRateParams, LpParams } from "../types";
 
 
-export const getIrParams = async (network: NetworkName): Promise<InterestRateParams> => {
+export const getIrParams = async (): Promise<InterestRateParams> => {
   const [contractAddress, contractName] = CONTRACTS.ir.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -12,7 +12,7 @@ export const getIrParams = async (network: NetworkName): Promise<InterestRatePar
     functionName: "get-ir-params",
     functionArgs: [],
     senderAddress: contractAddress,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -27,7 +27,7 @@ export const getIrParams = async (network: NetworkName): Promise<InterestRatePar
   })
 }
 
-export const getLpParams = async (network: NetworkName): Promise<LpParams> => {
+export const getLpParams = async (): Promise<LpParams> => {
   const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -35,7 +35,7 @@ export const getLpParams = async (network: NetworkName): Promise<LpParams> => {
     functionName: "get-lp-params",
     functionArgs: [],
     senderAddress: contractAddress,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -48,7 +48,7 @@ export const getLpParams = async (network: NetworkName): Promise<LpParams> => {
   })
 };
 
-export const getAccrueInterestParams = async (network: NetworkName): Promise<AccrueInterestParams> => {
+export const getAccrueInterestParams = async (): Promise<AccrueInterestParams> => {
   const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -56,7 +56,7 @@ export const getAccrueInterestParams = async (network: NetworkName): Promise<Acc
     functionName: "get-accrue-interest-params",
     functionArgs: [],
     senderAddress: contractAddress,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -69,7 +69,7 @@ export const getAccrueInterestParams = async (network: NetworkName): Promise<Acc
   })
 }
 
-export const getDebtParams = async (network: NetworkName): Promise<DebtParams> => {
+export const getDebtParams = async (): Promise<DebtParams> => {
   const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -77,7 +77,7 @@ export const getDebtParams = async (network: NetworkName): Promise<DebtParams> =
     functionName: "get-debt-params",
     functionArgs: [],
     senderAddress: contractAddress,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -91,7 +91,7 @@ export const getDebtParams = async (network: NetworkName): Promise<DebtParams> =
   })
 };
 
-export const getCollateralParams = async (collateral: string, network: NetworkName): Promise<CollateralParams> => {
+export const getCollateralParams = async (collateral: string): Promise<CollateralParams> => {
   const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -101,7 +101,7 @@ export const getCollateralParams = async (collateral: string, network: NetworkNa
       contractPrincipalCV(collateral.split(".")[0], collateral.split(".")[1])
     ],
     senderAddress: contractAddress,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -116,7 +116,7 @@ export const getCollateralParams = async (collateral: string, network: NetworkNa
   })
 };
 
-export const getUserPosition = async (address: string, network: NetworkName): Promise<Pick<BorrowerPositionEntity, 'debtShares' | 'collaterals'>> => {
+export const getUserPosition = async (address: string): Promise<Pick<BorrowerPositionEntity, 'debtShares' | 'collaterals'>> => {
   const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -126,7 +126,7 @@ export const getUserPosition = async (address: string, network: NetworkName): Pr
       principalCV(address),
     ],
     senderAddress: address,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -147,7 +147,7 @@ export const getUserPosition = async (address: string, network: NetworkName): Pr
   })
 }
 
-export const getUserCollateralAmount = async (address: string, collateral: string, network: NetworkName): Promise<number> => {
+export const getUserCollateralAmount = async (address: string, collateral: string): Promise<number> => {
   const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
@@ -158,7 +158,7 @@ export const getUserCollateralAmount = async (address: string, collateral: strin
       contractPrincipalCV(collateral.split(".")[0], collateral.split(".")[1])
     ],
     senderAddress: address,
-    network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -168,7 +168,7 @@ export const getUserCollateralAmount = async (address: string, collateral: strin
   })
 }
 
-export const getAssetInfo = async (address: string, network: NetworkName): Promise<AssetInfo> => {
+export const getAssetInfo = async (address: string): Promise<AssetInfo> => {
   const [contractAddress, contractName] = address.split(".");
   const name = await fetchCallReadOnlyFunction({
     contractAddress,
@@ -176,7 +176,7 @@ export const getAssetInfo = async (address: string, network: NetworkName): Promi
     functionName: 'get-name',
     functionArgs: [],
     senderAddress: contractAddress,
-    network: network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -188,7 +188,7 @@ export const getAssetInfo = async (address: string, network: NetworkName): Promi
     functionName: 'get-symbol',
     functionArgs: [],
     senderAddress: contractAddress,
-    network: network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -200,7 +200,7 @@ export const getAssetInfo = async (address: string, network: NetworkName): Promi
     functionName: 'get-decimals',
     functionArgs: [],
     senderAddress: contractAddress,
-    network: network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }
@@ -211,7 +211,7 @@ export const getAssetInfo = async (address: string, network: NetworkName): Promi
   }
 }
 
-export const getAssetBalance = async (assetAddress: string, contractId: string, network: NetworkName) => {
+export const getAssetBalance = async (assetAddress: string, contractId: string) => {
   const [contractAddress, contractName] = assetAddress.split(".");
   return await fetchCallReadOnlyFunction({
     contractAddress,
@@ -221,7 +221,7 @@ export const getAssetBalance = async (assetAddress: string, contractId: string, 
       contractPrincipalCV(contractId.split(".")[0], contractId.split(".")[1])
     ],
     senderAddress: contractAddress,
-    network: network,
+    network: 'mainnet',
     client: {
       fetch: fetchFn,
     }

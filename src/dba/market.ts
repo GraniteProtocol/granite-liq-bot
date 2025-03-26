@@ -9,61 +9,61 @@ import type {
 } from "../types";
 
 
-export const getIrParamsLocal = (network: NetworkName): InterestRateParams | null => {
-    const r = kvStoreGet(`ir-params-${network}`);
+export const getIrParamsLocal = (): InterestRateParams | null => {
+    const r = kvStoreGet(`ir-params`);
     return r ? JSON.parse(r) : null;
 }
 
-export const setIrParamsLocal = (network: NetworkName, irParams: InterestRateParams) => {
-    kvStoreSet(`ir-params-${network}`, JSON.stringify(irParams));
+export const setIrParamsLocal = (irParams: InterestRateParams) => {
+    kvStoreSet(`ir-params`, JSON.stringify(irParams));
 }
 
-export const getLpParamsLocal = (network: NetworkName): LpParams | null => {
-    const r = kvStoreGet(`lp-params-${network}`);
+export const getLpParamsLocal = (): LpParams | null => {
+    const r = kvStoreGet(`lp-params`);
     return r ? JSON.parse(r) : null;
 }
 
-export const setLpParamsLocal = (network: NetworkName, lpParams: LpParams) => {
-    kvStoreSet(`lp-params-${network}`, JSON.stringify(lpParams));
+export const setLpParamsLocal = (lpParams: LpParams) => {
+    kvStoreSet(`lp-params`, JSON.stringify(lpParams));
 }
 
-export const getAccrueInterestParamsLocal = (network: NetworkName): AccrueInterestParams | null => {
-    const r = kvStoreGet(`accrue-interest-params-${network}`);
+export const getAccrueInterestParamsLocal = (): AccrueInterestParams | null => {
+    const r = kvStoreGet(`accrue-interest-params`);
     return r ? JSON.parse(r) : null;
 }
 
-export const setAccrueInterestParamsLocal = (network: NetworkName, accrueInterestParams: AccrueInterestParams) => {
-    kvStoreSet(`accrue-interest-params-${network}`, JSON.stringify(accrueInterestParams));
+export const setAccrueInterestParamsLocal = (accrueInterestParams: AccrueInterestParams) => {
+    kvStoreSet(`accrue-interest-params`, JSON.stringify(accrueInterestParams));
 }
 
-export const getDebtParamsLocal = (network: NetworkName): DebtParams | null => {
-    const r = kvStoreGet(`debt-params-${network}`);
+export const getDebtParamsLocal = (): DebtParams | null => {
+    const r = kvStoreGet(`debt-params`);
     return r ? JSON.parse(r) : null;
 }
 
-export const setDebtParamsLocal = (network: NetworkName, debtParams: DebtParams) => {
-    kvStoreSet(`debt-params-${network}`, JSON.stringify(debtParams));
+export const setDebtParamsLocal = (debtParams: DebtParams) => {
+    kvStoreSet(`debt-params`, JSON.stringify(debtParams));
 }
 
-export const getCollateralParamsLocal = (network: NetworkName): Record<string, CollateralParams> | null => {
-    const r = kvStoreGet(`collateral-params-${network}`);
+export const getCollateralParamsLocal = (): Record<string, CollateralParams> | null => {
+    const r = kvStoreGet(`collateral-params`);
     return r ? JSON.parse(r) : null;
 }
 
-export const setCollateralParamsLocal = (network: NetworkName, collateralParams: Record<string, CollateralParams>) => {
-    kvStoreSet(`collateral-params-${network}`, JSON.stringify(collateralParams));
+export const setCollateralParamsLocal = (collateralParams: Record<string, CollateralParams>) => {
+    kvStoreSet(`collateral-params`, JSON.stringify(collateralParams));
 }
 
-export const getMarketState = (network: NetworkName): MarketState => {
-    const irParams = getIrParamsLocal(network);
+export const getMarketState = (): MarketState => {
+    const irParams = getIrParamsLocal();
     assert(irParams, 'irParams not found');
-    const lpParams = getLpParamsLocal(network);
+    const lpParams = getLpParamsLocal();
     assert(lpParams, 'lpParams not found');
-    const accrueInterestParams = getAccrueInterestParamsLocal(network);
+    const accrueInterestParams = getAccrueInterestParamsLocal();
     assert(accrueInterestParams, 'accrueInterestParams not found');
-    const debtParams = getDebtParamsLocal(network);
+    const debtParams = getDebtParamsLocal();
     assert(debtParams, 'debtParams not found');
-    const collateralParams = getCollateralParamsLocal(network);
+    const collateralParams = getCollateralParamsLocal();
     assert(collateralParams, 'collateralParams not found');
     assert(Object.keys(collateralParams).length > 0, 'collateralParams is empty');
 
@@ -74,7 +74,7 @@ export const getMarketState = (network: NetworkName): MarketState => {
         debtParams,
         collateralParams,
         marketAssetParams: {
-            decimals: MARKET_ASSET_DECIMAL[network],
+            decimals: MARKET_ASSET_DECIMAL
         }
     }
 }

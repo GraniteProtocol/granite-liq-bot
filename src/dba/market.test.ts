@@ -17,13 +17,13 @@ mock.module("../constants", () => {
 
 describe("dba market", () => {
     test("IrParamsLocal", () => {
-        setIrParamsLocal('mainnet', {
+        setIrParamsLocal({
             urKink: 100,
             baseIR: 1000,
             slope1: 2000,
             slope2: 3000,
         });
-        const resp = getIrParamsLocal('mainnet');
+        const resp = getIrParamsLocal();
         expect(resp).toEqual({
             urKink: 100,
             baseIR: 1000,
@@ -33,11 +33,11 @@ describe("dba market", () => {
     });
 
     test("LpParamsLocal", () => {
-        setLpParamsLocal('mainnet', {
+        setLpParamsLocal({
             totalAssets: 1000,
             totalShares: 1000,
         });
-        const resp = getLpParamsLocal('mainnet');
+        const resp = getLpParamsLocal();
         expect(resp).toEqual({
             totalAssets: 1000,
             totalShares: 1000,
@@ -45,21 +45,21 @@ describe("dba market", () => {
     });
 
     test("AccrueInterestParamsLocal", () => {
-        setAccrueInterestParamsLocal('mainnet', {
+        setAccrueInterestParamsLocal({
             lastAccruedBlockTime: 1000,
         });
-        const resp = getAccrueInterestParamsLocal('mainnet');
+        const resp = getAccrueInterestParamsLocal();
         expect(resp).toEqual({
             lastAccruedBlockTime: 1000,
         });
     });
 
     test("DebtParamsLocal", () => {
-        setDebtParamsLocal('mainnet', {
+        setDebtParamsLocal({
             openInterest: 2000,
             totalDebtShares: 1000,
         });
-        const resp = getDebtParamsLocal('mainnet');
+        const resp = getDebtParamsLocal();
         expect(resp).toEqual({
             openInterest: 2000,
             totalDebtShares: 1000,
@@ -67,7 +67,7 @@ describe("dba market", () => {
     });
 
     test("CollateralParamsLocal", () => {
-        setCollateralParamsLocal('mainnet', {
+        setCollateralParamsLocal({
             'SP20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-eth': {
                 liquidationLTV: 100,
                 maxLTV: 200,
@@ -77,7 +77,7 @@ describe("dba market", () => {
                 maxLTV: 209,
             },
         });
-        const resp = getCollateralParamsLocal('mainnet');
+        const resp = getCollateralParamsLocal();
         expect(resp).toEqual({
             'SP20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-eth': {
                 liquidationLTV: 100,
@@ -94,36 +94,36 @@ describe("dba market", () => {
     test("getMarketState", () => {
         dbCon.run("DELETE FROM kv_store");
 
-        expect(() => { getMarketState('mainnet') }).toThrow(Error('irParams not found'));
-        setIrParamsLocal('mainnet', {
+        expect(() => { getMarketState() }).toThrow(Error('irParams not found'));
+        setIrParamsLocal({
             urKink: 100,
             baseIR: 1000,
             slope1: 2000,
             slope2: 3000,
         });
 
-        expect(() => { getMarketState('mainnet') }).toThrow(Error('lpParams not found'));
-        setLpParamsLocal('mainnet', {
+        expect(() => { getMarketState() }).toThrow(Error('lpParams not found'));
+        setLpParamsLocal({
             totalAssets: 1000,
             totalShares: 2000,
         });
 
-        expect(() => { getMarketState('mainnet') }).toThrow(Error('accrueInterestParams not found'));
-        setAccrueInterestParamsLocal('mainnet', {
+        expect(() => { getMarketState() }).toThrow(Error('accrueInterestParams not found'));
+        setAccrueInterestParamsLocal({
             lastAccruedBlockTime: 1000,
         });
 
-        expect(() => { getMarketState('mainnet') }).toThrow(Error('debtParams not found'));
-        setDebtParamsLocal('mainnet', {
+        expect(() => { getMarketState() }).toThrow(Error('debtParams not found'));
+        setDebtParamsLocal({
             openInterest: 2000,
             totalDebtShares: 1000,
         });
 
-        expect(() => { getMarketState('mainnet') }).toThrow(Error('collateralParams not found'));
-        setCollateralParamsLocal('mainnet', {});
+        expect(() => { getMarketState() }).toThrow(Error('collateralParams not found'));
+        setCollateralParamsLocal({});
 
-        expect(() => { getMarketState('mainnet') }).toThrow(Error('collateralParams is empty'));
-        setCollateralParamsLocal('mainnet', {
+        expect(() => { getMarketState() }).toThrow(Error('collateralParams is empty'));
+        setCollateralParamsLocal({
             'SP20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-eth': {
                 liquidationLTV: 100,
                 maxLTV: 200,
@@ -134,7 +134,7 @@ describe("dba market", () => {
             },
         });
 
-        const resp = getMarketState('mainnet');
+        const resp = getMarketState();
         expect(resp).toEqual({
             irParams: {
                 urKink: 100,
