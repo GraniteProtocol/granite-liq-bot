@@ -29,28 +29,28 @@ const syncMarketState = async () => {
         if (lastSyncTs.irParams < now - 600) {
             const val = await getIrParams();
             setIrParamsLocal(val);
-            // logger.info(`setIrParamsLocal: ${network} ${JSON.stringify(val)}`);
+            // logger.info(`setIrParamsLocal: ${JSON.stringify(val)}`);
             lastSyncTs.irParams = now;
         }
 
         if (lastSyncTs.lpParams < now - 30) {
             const val = await getLpParams();
             setLpParamsLocal(val);
-            //logger.info(`setLpParamsLocal: ${network} ${JSON.stringify(val)}`);
+            //logger.info(`setLpParamsLocal: ${JSON.stringify(val)}`);
             lastSyncTs.lpParams = now;
         }
 
         if (lastSyncTs.accrueInterestParams < now - 30) {
             const val = await getAccrueInterestParams();
             setAccrueInterestParamsLocal(val);
-            // logger.info(`setAccrueInterestParamsLocal: ${network} ${JSON.stringify(val)}`);
+            // logger.info(`setAccrueInterestParamsLocal: ${JSON.stringify(val)}`);
             lastSyncTs.accrueInterestParams = now;
         }
 
         if (lastSyncTs.debtParams < now - 30) {
             const val = await getDebtParams();
             setDebtParamsLocal(val);
-            // logger.info(`setDebtParamsLocal: ${network} ${JSON.stringify(val)}`);
+            // logger.info(`setDebtParamsLocal: ${JSON.stringify(val)}`);
             lastSyncTs.debtParams = now;
         }
 
@@ -60,7 +60,7 @@ const syncMarketState = async () => {
                 collateralParams[collateral] = await getCollateralParams(collateral);
             }
             setCollateralParamsLocal(collateralParams);
-            // logger.info(`setCollateralParamsLocal: ${network} ${JSON.stringify(collateralParams)}`);
+            // logger.info(`setCollateralParamsLocal: ${JSON.stringify(collateralParams)}`);
             lastSyncTs.collateralParams = now;
         }
 
