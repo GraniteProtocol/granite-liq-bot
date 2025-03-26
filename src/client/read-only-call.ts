@@ -5,7 +5,7 @@ import type { AccrueInterestParams, BorrowerPositionEntity, CollateralParams, De
 
 
 export const getIrParams = async (network: NetworkName): Promise<InterestRateParams> => {
-  const [contractAddress, contractName] = CONTRACTS[network].ir.split(".");
+  const [contractAddress, contractName] = CONTRACTS.ir.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
@@ -28,7 +28,7 @@ export const getIrParams = async (network: NetworkName): Promise<InterestRatePar
 }
 
 export const getLpParams = async (network: NetworkName): Promise<LpParams> => {
-  const [contractAddress, contractName] = CONTRACTS[network].state.split(".");
+  const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
@@ -49,7 +49,7 @@ export const getLpParams = async (network: NetworkName): Promise<LpParams> => {
 };
 
 export const getAccrueInterestParams = async (network: NetworkName): Promise<AccrueInterestParams> => {
-  const [contractAddress, contractName] = CONTRACTS[network].state.split(".");
+  const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
@@ -70,7 +70,7 @@ export const getAccrueInterestParams = async (network: NetworkName): Promise<Acc
 }
 
 export const getDebtParams = async (network: NetworkName): Promise<DebtParams> => {
-  const [contractAddress, contractName] = CONTRACTS[network].state.split(".");
+  const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
@@ -92,7 +92,7 @@ export const getDebtParams = async (network: NetworkName): Promise<DebtParams> =
 };
 
 export const getCollateralParams = async (collateral: string, network: NetworkName): Promise<CollateralParams> => {
-  const [contractAddress, contractName] = CONTRACTS[network].state.split(".");
+  const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
@@ -117,7 +117,7 @@ export const getCollateralParams = async (collateral: string, network: NetworkNa
 };
 
 export const getUserPosition = async (address: string, network: NetworkName): Promise<Pick<BorrowerPositionEntity, 'debtShares' | 'collaterals'>> => {
-  const [contractAddress, contractName] = CONTRACTS[network].state.split(".");
+  const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
@@ -148,7 +148,7 @@ export const getUserPosition = async (address: string, network: NetworkName): Pr
 }
 
 export const getUserCollateralAmount = async (address: string, collateral: string, network: NetworkName): Promise<number> => {
-  const [contractAddress, contractName] = CONTRACTS[network].state.split(".");
+  const [contractAddress, contractName] = CONTRACTS.state.split(".");
   return fetchCallReadOnlyFunction({
     contractAddress,
     contractName,

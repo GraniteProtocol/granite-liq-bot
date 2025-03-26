@@ -12,9 +12,9 @@ import { createLogger } from "../../logger";
 const logger = createLogger("event-sync");
 
 const TRACKED_CONTRACTS = [
-  CONTRACTS.mainnet.borrower,
-  CONTRACTS.mainnet.state,
-  CONTRACTS.mainnet.liquidator
+  CONTRACTS.borrower,
+  CONTRACTS.state,
+  CONTRACTS.liquidator
 ]
 
 const processEvents = (network: NetworkName, event: TransactionEventSmartContractLog) => {

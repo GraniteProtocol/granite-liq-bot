@@ -68,7 +68,7 @@ const syncMarketState = async () => {
         }
 
         if (lastSyncTs[network].collateralParams < now - 30) {
-            const collaterals = CONTRACTS[network].collaterals;
+            const collaterals = CONTRACTS.collaterals;
             const collateralParams: Record<string, CollateralParams> = {};
             for (const collateral of collaterals.filter(c => getNetworkNameFromAddress(c) === network)) {
                 collateralParams[collateral] = await getCollateralParams(collateral, network);
