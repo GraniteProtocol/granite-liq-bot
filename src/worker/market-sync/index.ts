@@ -7,7 +7,6 @@ import {
     setAccrueInterestParamsLocal, setCollateralParamsLocal,
     setDebtParamsLocal, setIrParamsLocal, setLpParamsLocal
 } from "../../dba/market";
-import { getNetworkNameFromAddress } from "../../helper";
 import { createLogger } from "../../logger";
 import type { CollateralParams } from "../../types";
 import { epoch } from "../../util";
@@ -25,8 +24,7 @@ const lastSyncTs = {
 
 const syncMarketState = async () => {
     dbCon.run("BEGIN");
-
-   
+    
         const now = epoch();
 
         if (lastSyncTs.irParams < now - 600) {

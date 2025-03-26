@@ -11,6 +11,7 @@ import { hexToUint8Array } from "../../helper";
 import { createLogger } from "../../logger";
 import { epoch } from "../../util";
 import { liquidationBatchCv, makeLiquidationBatch, swapOutCv } from "./lib";
+import type { StacksNetworkName } from "@stacks/network";
 
 const logger = createLogger("liquidate");
 
@@ -112,8 +113,8 @@ const worker = async (network: NetworkName) => {
     ];
 
     const priv = getContractOperatorPriv(contract.id)!;
-    const nonce = (await getAccountNonces(contract.operatorAddress, contract.network)).possible_next_nonce;
-    const fee = await estimateTxFeeOptimistic(contract.network);
+    const nonce = (await getAccountNonces(contract.operatorAddress, 'mainnet')).possible_next_nonce;
+    const fee = await estimateTxFeeOptimistic();
 
     const txOptions = {
         contractAddress: contract.address,
@@ -122,7 +123,7 @@ const worker = async (network: NetworkName) => {
         functionArgs,
         senderKey: priv,
         senderAddress: contract.operatorAddress,
-        network: contract.network,
+        network: 'mainnet' as StacksNetworkName,
         fee,
         validateWithAbi: true,
         postConditionMode: PostConditionMode.Allow,
@@ -137,7 +138,7 @@ const worker = async (network: NetworkName) => {
         return;
     }
 
-    const tx = await broadcastTransaction({ transaction: call, network: contract.network, client: { fetch: fetchFn } });
+    const tx = await broadcastTransaction({ transaction: call, network: 'mainnet', client: { fetch: fetchFn } });
 
     if ("reason" in tx) {
         if ("reason_data" in tx) {

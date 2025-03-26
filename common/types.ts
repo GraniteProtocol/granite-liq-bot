@@ -15,7 +15,6 @@ export type ContractEntity = {
     id: string,
     address: string,
     name: string,
-    network: NetworkName,
     operatorAddress: string,
     marketAsset: AssetInfoWithBalance | null,
     collateralAsset: AssetInfoWithBalance | null,
@@ -33,4 +32,4 @@ export type BorrowerStatus = {
     totalRepayAmount: number
 }
 
-export type BorrowerStatusEntity = BorrowerStatus & { address: string, network: NetworkName }
+export type BorrowerStatusEntity = BorrowerStatus & { address: string }

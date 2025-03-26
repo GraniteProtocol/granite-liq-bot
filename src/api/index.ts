@@ -12,7 +12,7 @@ export const main = async () => {
             } else if (req.method === "POST" && url.pathname === "/add-contract") {
                 res = await routes.addContract(req);
             } else if (req.method === "GET" && url.pathname === "/borrowers") {
-                res = await routes.getBorrowers(req, url);
+                res = await routes.getBorrowers(req);
             } else if (req.method === "GET" && url.pathname === "/health") {
                 res = await routes.health();
             } else {

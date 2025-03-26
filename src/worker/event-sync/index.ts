@@ -6,7 +6,6 @@ import { CONTRACTS } from "../../constants";
 import { dbCon } from "../../db/con";
 import { kvStoreGet, kvStoreSet } from "../../db/helper";
 import { upsertBorrower } from "../../dba/borrower";
-import { getNetworkNameFromAddress } from "../../helper";
 import { createLogger } from "../../logger";
 
 const logger = createLogger("event-sync");
@@ -17,7 +16,7 @@ const TRACKED_CONTRACTS = [
   CONTRACTS.liquidator
 ]
 
-const processEvents = (network: NetworkName, event: TransactionEventSmartContractLog) => {
+const processEvents = (event: TransactionEventSmartContractLog) => {
   const decoded = hexToCV(event.contract_log.value.hex);
   const json = cvToJSON(decoded);
   const action = json?.value?.action?.value;
@@ -32,7 +31,7 @@ const processEvents = (network: NetworkName, event: TransactionEventSmartContrac
   }
 
   if (user) {
-    const r = upsertBorrower(network, user);
+    const r = upsertBorrower(user);
     if (r === 1) {
       logger.info(`New borrower ${user}`);
     }
@@ -45,7 +44,6 @@ const processEvents = (network: NetworkName, event: TransactionEventSmartContrac
 const worker = async (contract: string) => {
   const key = `borrower-sync-last-tx-seen-${contract}`;
   const lastSeenTx = kvStoreGet(key);
-  const network = getNetworkNameFromAddress(contract);
 
   const limit = 50;
   let offset = 0;
@@ -56,7 +54,7 @@ const worker = async (contract: string) => {
       contract,
       limit,
       offset,
-      network
+      'mainnet'
     );
 
     if (!lastSeenTxRemote && events.results[0]) {
@@ -73,7 +71,7 @@ const worker = async (contract: string) => {
       }
 
       if ("contract_log" in event) {
-        await processEvents(network, event);
+         processEvents(event);
       }
     }
 

@@ -1,17 +1,4 @@
-import type { NetworkName } from "granite-liq-bot-common";
 import type { Ticker } from "./client/pyth";
-
-export const getNetworkNameFromAddress = (address: string): NetworkName => {
-  if (address.startsWith('ST') || address.startsWith('SN')) {
-    return 'testnet';
-  }
-
-  if (address.startsWith('SP') || address.startsWith('SM')) {
-    return 'mainnet';
-  }
-
-  throw new Error('Invalid address');
-}
 
 export function hexToUint8Array(hexString: string): Uint8Array {
   // Remove any leading "0x" from the hex string if it exists

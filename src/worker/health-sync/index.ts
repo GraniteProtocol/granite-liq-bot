@@ -15,7 +15,6 @@ export const worker = async () => {
       continue;
     }
 
-    const network = borrower.network as NetworkName;
     const marketState = getMarketState();
 
     const collateralsDeposited: Record<string, number> = {}
@@ -32,7 +31,7 @@ export const worker = async () => {
       collateralsDeposited
     }, marketState, priceFeed);
 
-    insertBorrowerStatus(borrower.address, network, status);
+    insertBorrowerStatus(borrower.address, status);
   }
   dbCon.run("COMMIT");
 };

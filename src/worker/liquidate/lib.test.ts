@@ -403,7 +403,6 @@ describe("makeLiquidationBatch", () => {
         const borrowers: BorrowerStatusEntity[] = [
             {
                 address: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -430,7 +429,6 @@ describe("makeLiquidationBatch", () => {
         const borrowers: BorrowerStatusEntity[] = [
             {
                 address: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -443,7 +441,6 @@ describe("makeLiquidationBatch", () => {
             },
             {
                 address: "ST2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX53H4AZFA",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -475,7 +472,6 @@ describe("makeLiquidationBatch", () => {
         const borrowers: BorrowerStatusEntity[] = [
             {
                 address: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -488,7 +484,6 @@ describe("makeLiquidationBatch", () => {
             },
             {
                 address: "ST2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX53H4AZFA",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -501,7 +496,6 @@ describe("makeLiquidationBatch", () => {
             },
             {
                 address: "ST2VWSP59FEVDXXYGGWYG90M3N67ZST2AGPA3P2HC",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -536,7 +530,6 @@ describe("makeLiquidationBatch", () => {
         const borrowers: BorrowerStatusEntity[] = [
             {
                 address: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -549,7 +542,6 @@ describe("makeLiquidationBatch", () => {
             },
             {
                 address: "ST2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX53H4AZFA",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,
@@ -562,7 +554,6 @@ describe("makeLiquidationBatch", () => {
             },
             {
                 address: "ST2VWSP59FEVDXXYGGWYG90M3N67ZST2AGPA3P2HC",
-                network: "testnet",
                 ltv: 0.5038,
                 health: 0.9726,
                 debt: 35.7413,

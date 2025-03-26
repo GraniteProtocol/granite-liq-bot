@@ -5,7 +5,6 @@ describe("dba contracts", () => {
     test("insertContract", () => {
         setSystemTime(1738262052565);
         insertContract('SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator',
-            'mainnet',
             'SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T',
             '0x1.',
             { address: "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc", name: "Ethereum USDC via Allbridge", symbol: "aeUSDC", decimals: 6 },
@@ -16,25 +15,12 @@ describe("dba contracts", () => {
     test("insertContract", () => {
         setSystemTime(1738262062565);
         insertContract('ST1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator',
-            'testnet',
             'ST1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T',
             '0x2.',
             { address: "ST3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.mock-usdc", name: "mock USDC", symbol: "USDC", decimals: 8 },
             { address: "SN3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.mock-sbtc", name: "mock sBTC", symbol: "sBTC", decimals: 8 }
         );
     });
-
-    test("insertContract network must be unique", () => {
-        expect(() => {
-            insertContract('SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator',
-                'mainnet', 'SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T',
-                '0x..',
-                { address: "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc", name: "Ethereum USDC via Allbridge", symbol: "aeUSDC", decimals: 6 },
-                { address: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token", name: "sBTC", symbol: "sBTC", decimals: 8 }
-            )
-        }).toThrow();
-    });
-
 
     test("getContractList", () => {
         const contracts = getContractList({ orderBy: 'created_at DESC' });
@@ -43,7 +29,6 @@ describe("dba contracts", () => {
                 id: "ST1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator",
                 address: "ST1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T",
                 name: "liquidator",
-                network: "testnet",
                 operatorAddress: "ST1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T",
                 marketAsset: {
                     address: "ST3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.mock-usdc",
@@ -65,7 +50,6 @@ describe("dba contracts", () => {
                 id: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator",
                 address: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T",
                 name: "liquidator",
-                network: "mainnet",
                 operatorAddress: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T",
                 marketAsset: {
                     address: "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc",
@@ -88,13 +72,12 @@ describe("dba contracts", () => {
     });
 
     test("getContractList with filters", () => {
-        const contracts = getContractList({ filters: { network: 'mainnet' }, orderBy: 'created_at DESC' });
+        const contracts = getContractList({ filters: { address: 'SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T' }, orderBy: 'created_at DESC' });
         expect(contracts).toEqual([
             {
                 id: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator",
                 address: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T",
                 name: "liquidator",
-                network: "mainnet",
                 operatorAddress: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T",
                 marketAsset: {
                     address: "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc",

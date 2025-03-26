@@ -1,4 +1,4 @@
-import type { BorrowerStatus, NetworkName } from "granite-liq-bot-common";
+import type { BorrowerStatus } from "granite-liq-bot-common";
 import { type BorrowerStatusEntity } from "granite-liq-bot-common";
 import { BORROWER_SYNC_DELAY } from "../constants";
 import { dbCon } from "../db/con";
@@ -8,14 +8,13 @@ import type {
 } from "../types";
 import { epoch } from "../util";
 
-export const upsertBorrower = (network: NetworkName, address: string): 0 | 1 | 2 => {
+export const upsertBorrower = (address: string): 0 | 1 | 2 => {
     const rec = dbCon.prepare("SELECT sync_flag FROM borrower WHERE address = ?", [address]).get() as any;
     // wait some time before syncing to make sure blockchain data settled
     const syncTs = epoch() + BORROWER_SYNC_DELAY;
     if (!rec) {
-        dbCon.run("INSERT INTO borrower (address, network, sync_flag, sync_ts) VALUES (?, ?, ?, ?)", [
+        dbCon.run("INSERT INTO borrower (address, sync_flag, sync_ts) VALUES (?, ?, ?)", [
             address,
-            network,
             1,
             syncTs
         ]);
@@ -32,10 +31,9 @@ export const upsertBorrower = (network: NetworkName, address: string): 0 | 1 | 2
 
 
 export const getBorrowersToSync = (): BorrowerEntity[] => {
-    const rows = dbCon.query("SELECT address, network, sync_ts FROM borrower WHERE sync_flag = 1").all() as any[];
+    const rows = dbCon.query("SELECT address, sync_ts FROM borrower WHERE sync_flag = 1").all() as any[];
     return rows.map(x => ({
         address: x.address,
-        network: x.network,
         syncTs: x.sync_ts
     }));
 }
@@ -46,24 +44,23 @@ export const switchBorrowerSyncFlagOff = (address: string) => {
 
 export const syncBorrowerPosition = (userPosition: BorrowerPositionEntity) => {
     dbCon.run("DELETE FROM borrower_position WHERE address = ? ", [userPosition.address]);
-    dbCon.run("INSERT INTO borrower_position (address, network, debt_shares, collaterals) VALUES (?, ?, ?, ?)",
-        [userPosition.address, userPosition.network, userPosition.debtShares, JSON.stringify(userPosition.collaterals)]);
+    dbCon.run("INSERT INTO borrower_position (address, debt_shares, collaterals) VALUES (?, ?, ?)",
+        [userPosition.address, userPosition.debtShares, JSON.stringify(userPosition.collaterals)]);
 }
 
 export const syncBorrowerCollaterals = (address: string, collaterals: Omit<BorrowerCollateralEntity, 'address'>[]) => {
     dbCon.run("DELETE FROM borrower_collaterals WHERE address = ?", [address]);
 
     for (const collateral of collaterals) {
-        dbCon.run("INSERT INTO borrower_collaterals (address, network, collateral, amount) VALUES (?, ?, ?, ?)",
-            [address, collateral.network, collateral.collateral, collateral.amount]);
+        dbCon.run("INSERT INTO borrower_collaterals (address, collateral, amount) VALUES (?, ?, ?)",
+            [address, collateral.collateral, collateral.amount]);
     }
 }
 
-export const getBorrowersForHealthCheck = (): { address: string, network: string, debtShares: number, collaterals: string[] }[] => {
-    const rows = dbCon.query("SELECT address, network, debt_shares, collaterals FROM borrower_position").all() as any[];
+export const getBorrowersForHealthCheck = (): { address: string, debtShares: number, collaterals: string[] }[] => {
+    const rows = dbCon.query("SELECT address, debt_shares, collaterals FROM borrower_position").all() as any[];
     return rows.map(row => ({
         address: row.address,
-        network: row.network,
         debtShares: Number(row.debt_shares),
         collaterals: JSON.parse(row.collaterals)
     }))
@@ -78,14 +75,14 @@ export const clearBorrowerStatuses = () => {
     dbCon.run("DELETE FROM borrower_status");
 }
 
-export const insertBorrowerStatus = (address: string, network: NetworkName, status: BorrowerStatus) => {
+export const insertBorrowerStatus = (address: string, status: BorrowerStatus) => {
     dbCon.run(
         `INSERT INTO borrower_status (
-            address, network, ltv, health, debt, collateral, risk, max_repay, total_repay_amount
+            address, ltv, health, debt, collateral, risk, max_repay, total_repay_amount
         ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?
         )`,
-        [address, network, status.ltv.toFixed(4), status.health.toFixed(4), status.debt.toFixed(4), status.collateral.toFixed(4), status.risk.toFixed(4), JSON.stringify(status.maxRepay), status.totalRepayAmount])
+        [address, status.ltv.toFixed(4), status.health.toFixed(4), status.debt.toFixed(4), status.collateral.toFixed(4), status.risk.toFixed(4), JSON.stringify(status.maxRepay), status.totalRepayAmount])
 }
 
 export const getBorrowerStatusList = (args: {
@@ -104,7 +101,6 @@ export const getBorrowerStatusList = (args: {
     const rows = dbCon.prepare(sql, Object.values(filters)).all() as any[];
     return rows.map(row => ({
         address: row.address,
-        network: row.network,
         ltv: Number(row.ltv),
         health: Number(row.health),
         debt: Number(row.debt),

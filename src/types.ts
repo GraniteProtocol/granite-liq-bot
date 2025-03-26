@@ -1,4 +1,3 @@
-import type { NetworkName } from "granite-liq-bot-common";
 import type { CollateralParams as CollateralParams_, Collateral as Collateral_, InterestRateParams as InterestRateParams_ } from "granite-math-sdk";
 
 
@@ -37,20 +36,17 @@ export type MarketState = {
 
 export type BorrowerEntity = {
     address: string,
-    network: NetworkName,
     syncTs: number
 }
 
 export type BorrowerPositionEntity = {
     address: string,
-    network: NetworkName,
     debtShares: number,
     collaterals: string[]
 }
 
 export type BorrowerCollateralEntity = {
     address: string,
-    network: NetworkName,
     collateral: string,
     amount: number
 }

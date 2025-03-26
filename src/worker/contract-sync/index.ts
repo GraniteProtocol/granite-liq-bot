@@ -14,7 +14,7 @@ const handleContractLocks = async (contract: ContractEntity) => {
 
     // schedule contract unlock
     if (contract.lockTx && contract.unlocksAt === null) {
-        const tx = await getTransaction(contract.lockTx, contract.network);
+        const tx = await getTransaction(contract.lockTx, 'mainnet');
         if (tx.tx_status && tx.tx_status !== "pending") {
 
             const unlocksAt = epoch() + 60;
@@ -23,7 +23,7 @@ const handleContractLocks = async (contract: ContractEntity) => {
 
             const principals = getLiquidatedPrincipals(tx as Transaction);
             for (const principal of principals) {
-                if (upsertBorrower(contract.network, principal) === 2) {
+                if (upsertBorrower(principal) === 2) {
                     logger.info(`Borrower ${principal} check sync activated`);
                 }
             }
