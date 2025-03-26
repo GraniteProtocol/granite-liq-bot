@@ -1,4 +1,3 @@
-import type { NetworkName } from "granite-liq-bot-common";
 import { getAccrueInterestParams, getCollateralParams, getDebtParams, getIrParams, getLpParams } from "../../client/read-only-call";
 import { CONTRACTS } from "../../constants";
 

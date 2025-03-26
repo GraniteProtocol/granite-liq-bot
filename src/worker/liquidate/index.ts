@@ -1,5 +1,5 @@
 import { broadcastTransaction, bufferCV, makeContractCall, PostConditionMode, someCV, uintCV } from "@stacks/transactions";
-import { estimateTxFeeOptimistic, fetchFn, formatUnits, getAccountNonces, type NetworkName } from "granite-liq-bot-common";
+import { estimateTxFeeOptimistic, fetchFn, formatUnits, getAccountNonces } from "granite-liq-bot-common";
 import { getBestSwap } from "../../alex";
 import { fetchAndProcessPriceFeed } from "../../client/pyth";
 import { DRY_RUN, MIN_TO_LIQUIDATE, TX_TIMEOUT, SKIP_PROFITABILITY_CHECK } from "../../constants";
@@ -15,11 +15,8 @@ import type { StacksNetworkName } from "@stacks/network";
 
 const logger = createLogger("liquidate");
 
-const worker = async (network: NetworkName) => {
+const worker = async () => {
     const contract = (getContractList({
-        filters: {
-            network,
-        },
         orderBy: 'market_asset_balance DESC'
     }))[0];
 
@@ -51,9 +48,6 @@ const worker = async (network: NetworkName) => {
     }
 
     const borrowers = getBorrowerStatusList({
-        filters: {
-            network,
-        },
         orderBy: 'total_repay_amount DESC'
     });
 
@@ -158,7 +152,5 @@ const worker = async (network: NetworkName) => {
 }
 
 export const main = async () => {
-    // We'll drop testnet support soon
-    // await worker('testnet');
-    await worker('mainnet');
+    await worker();
 }

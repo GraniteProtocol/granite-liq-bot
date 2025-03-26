@@ -1,5 +1,4 @@
 import assert from "assert";
-import type { NetworkName } from "granite-liq-bot-common";
 import { MARKET_ASSET_DECIMAL } from "../constants";
 import { kvStoreGet, kvStoreSet } from "../db/helper";
 import type {

@@ -1,5 +1,5 @@
 import { contractPrincipalCV, cvToJSON, fetchCallReadOnlyFunction, principalCV } from "@stacks/transactions";
-import { fetchFn, type AssetInfo, type NetworkName } from "granite-liq-bot-common";
+import { fetchFn, type AssetInfo } from "granite-liq-bot-common";
 import { CONTRACTS } from "../constants";
 import type { AccrueInterestParams, BorrowerPositionEntity, CollateralParams, DebtParams, InterestRateParams, LpParams } from "../types";
 

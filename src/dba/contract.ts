@@ -1,4 +1,4 @@
-import { type AssetInfo, type ContractEntity, type NetworkName } from "granite-liq-bot-common";
+import { type AssetInfo, type ContractEntity } from "granite-liq-bot-common";
 import { dbCon } from "../db/con";
 import { epoch } from "../util";
 

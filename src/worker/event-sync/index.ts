@@ -1,6 +1,6 @@
 import type { TransactionEventSmartContractLog } from "@stacks/stacks-blockchain-api-types";
 import { cvToJSON, hexToCV } from "@stacks/transactions";
-import { getContractEvents, type NetworkName } from "granite-liq-bot-common";
+import { getContractEvents } from "granite-liq-bot-common";
 import { CONTRACTS } from "../../constants";
 
 import { dbCon } from "../../db/con";

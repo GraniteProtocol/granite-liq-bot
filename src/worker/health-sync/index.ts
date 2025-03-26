@@ -1,5 +1,4 @@
 import assert from "assert";
-import type { NetworkName } from "granite-liq-bot-common";
 import { fetchAndProcessPriceFeed } from "../../client/pyth";
 import { dbCon } from "../../db/con";
 import { clearBorrowerStatuses, getBorrowerCollateralAmount, getBorrowersForHealthCheck, insertBorrowerStatus } from "../../dba/borrower";
