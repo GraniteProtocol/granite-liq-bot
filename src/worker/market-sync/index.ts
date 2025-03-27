@@ -1,6 +1,5 @@
 import { getAccrueInterestParams, getCollateralParams, getDebtParams, getIrParams, getLpParams } from "../../client/read-only-call";
 import { CONTRACTS } from "../../constants";
-
 import { dbCon } from "../../db/con";
 import {
     setAccrueInterestParamsLocal, setCollateralParamsLocal,

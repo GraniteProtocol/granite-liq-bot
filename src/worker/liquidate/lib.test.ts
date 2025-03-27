@@ -1,5 +1,5 @@
 import { cvToJSON } from "@stacks/transactions";
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import type { AssetInfoWithBalance, BorrowerStatusEntity } from "granite-liq-bot-common";
 import { options } from "../../alex";
 import type { PriceFeedResponse } from "../../client/pyth";

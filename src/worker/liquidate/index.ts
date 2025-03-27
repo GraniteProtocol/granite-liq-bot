@@ -1,8 +1,9 @@
+import type { StacksNetworkName } from "@stacks/network";
 import { broadcastTransaction, bufferCV, makeContractCall, PostConditionMode, someCV, uintCV } from "@stacks/transactions";
 import { estimateTxFeeOptimistic, fetchFn, formatUnits, getAccountNonces } from "granite-liq-bot-common";
 import { getBestSwap } from "../../alex";
 import { fetchAndProcessPriceFeed } from "../../client/pyth";
-import { DRY_RUN, MIN_TO_LIQUIDATE, TX_TIMEOUT, SKIP_PROFITABILITY_CHECK } from "../../constants";
+import { DRY_RUN, MIN_TO_LIQUIDATE, SKIP_PROFITABILITY_CHECK, TX_TIMEOUT } from "../../constants";
 import { dbCon } from "../../db/con";
 import { getBorrowerStatusList, getBorrowersToSync } from "../../dba/borrower";
 import { getContractList, getContractOperatorPriv } from "../../dba/contract";
@@ -11,7 +12,6 @@ import { hexToUint8Array } from "../../helper";
 import { createLogger } from "../../logger";
 import { epoch } from "../../util";
 import { liquidationBatchCv, makeLiquidationBatch, swapOutCv } from "./lib";
-import type { StacksNetworkName } from "@stacks/network";
 
 const logger = createLogger("liquidate");
 

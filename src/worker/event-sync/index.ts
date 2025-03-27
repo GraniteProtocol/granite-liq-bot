@@ -2,7 +2,6 @@ import type { TransactionEventSmartContractLog } from "@stacks/stacks-blockchain
 import { cvToJSON, hexToCV } from "@stacks/transactions";
 import { getContractEvents } from "granite-liq-bot-common";
 import { CONTRACTS } from "../../constants";
-
 import { dbCon } from "../../db/con";
 import { kvStoreGet, kvStoreSet } from "../../db/helper";
 import { upsertBorrower } from "../../dba/borrower";

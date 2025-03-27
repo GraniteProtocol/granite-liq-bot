@@ -3,7 +3,6 @@ import type { PriceFeedResponse } from "../../client/pyth";
 import type { MarketState } from "../../types";
 import { calcBorrowerStatus } from "./lib";
 
-
 const makePriceFeed = (btc: string, eth: string, usdc: string): PriceFeedResponse => {
     return {
         "attestation": "0",

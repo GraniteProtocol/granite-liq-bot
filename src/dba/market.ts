@@ -7,7 +7,6 @@ import type {
     MarketState
 } from "../types";
 
-
 export const getIrParamsLocal = (): InterestRateParams | null => {
     const r = kvStoreGet(`ir-params`);
     return r ? JSON.parse(r) : null;
