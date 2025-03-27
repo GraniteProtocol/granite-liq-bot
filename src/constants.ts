@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 import type { Ticker } from "./client/pyth";
 
 export const IR_PARAMS_SCALING_FACTOR = 12;
