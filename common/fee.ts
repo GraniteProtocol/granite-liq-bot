@@ -1,9 +1,8 @@
 
 import { getMempoolTransactions } from "./hiro";
-import type { NetworkName } from "./types";
 
-const estimateTxFeeOptimistic = async (network: NetworkName): Promise<number> => {
-    const mempoolSize = (await getMempoolTransactions(1, network)).total;
+const estimateTxFeeOptimistic = async (): Promise<number> => {
+    const mempoolSize = (await getMempoolTransactions(1, 'mainnet')).total;
 
     if (mempoolSize > 300) {
         return 100000; // 0,1 STX
