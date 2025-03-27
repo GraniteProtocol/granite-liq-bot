@@ -6,33 +6,37 @@ import { getMarketState } from "../../dba/market";
 import { calcBorrowerStatus } from "./lib";
 
 export const worker = async () => {
-  dbCon.run("BEGIN");
-  clearBorrowerStatuses();
   const borrowers = getBorrowersForHealthCheck();
-  for (const borrower of borrowers) {
-    if (borrower.debtShares === 0) {
-      continue;
-    }
-
-    const marketState = getMarketState();
-
-    const collateralsDeposited: Record<string, number> = {}
-    for (const collateral of borrower.collaterals) {
-      const amount = getBorrowerCollateralAmount(borrower.address, collateral);
-      assert(amount !== undefined, "User collateral amount is undefined");
-      collateralsDeposited[collateral] = amount;
-    }
-
-    const priceFeed = await fetchAndProcessPriceFeed();
-
-    const status = calcBorrowerStatus({
-      debtShares: borrower.debtShares,
-      collateralsDeposited
-    }, marketState, priceFeed);
-
-    insertBorrowerStatus(borrower.address, status);
+  if (borrowers.length === 0) {
+    clearBorrowerStatuses();
+    return;
   }
-  dbCon.run("COMMIT");
+
+  const priceFeed = await fetchAndProcessPriceFeed();
+  const marketState = getMarketState();
+
+  dbCon.transaction(() => {
+    clearBorrowerStatuses();
+    for (const borrower of borrowers) {
+      if (borrower.debtShares === 0) {
+        continue;
+      }
+
+      const collateralsDeposited: Record<string, number> = {}
+      for (const collateral of borrower.collaterals) {
+        const amount = getBorrowerCollateralAmount(borrower.address, collateral);
+        assert(amount !== undefined, "User collateral amount is undefined");
+        collateralsDeposited[collateral] = amount;
+      }
+
+      const status = calcBorrowerStatus({
+        debtShares: borrower.debtShares,
+        collateralsDeposited
+      }, marketState, priceFeed);
+
+      insertBorrowerStatus(borrower.address, status);
+    }
+  })();
 };
 
 export const main = async () => {
