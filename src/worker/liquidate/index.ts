@@ -21,7 +21,7 @@ const worker = async () => {
     }))[0];
 
     if (!contract) {
-        // logger.info(`No ${network} contract found`);
+        // logger.info(`No contract found`);
         return;
     }
 
