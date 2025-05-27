@@ -55,6 +55,9 @@ const worker = async () => {
     const marketState = getMarketState();
     const liquidationPremium = marketState.collateralParams[collateralAsset.address].liquidationPremium;
 
+    // liquidationPremium %10 down to avoid the u30007 SLIPPAGE error 
+    const liquidationPremiumAdjusted = liquidationPremium -  ((liquidationPremium / 100) * 10);
+
     const priceFeed = await fetchAndProcessPriceFeed();
     const cFeed = priceFeed.items[toTicker(collateralAsset.symbol)];
     if (!cFeed) {
@@ -71,7 +74,7 @@ const worker = async () => {
         flashLoanCapacityBn,
         borrowers,
         collateralPrice,
-        liquidationPremium,
+        liquidationPremium: liquidationPremiumAdjusted,
         liquidationCap: LIQUIDATON_CAP
     });
     const { batch, spendBn, spend, receive } = batchInfo;
