@@ -1,6 +1,12 @@
 import { estimateUsdhToToAeusdc } from "../../dex/bitflow";
 
-export const findMaxSafeTradeAmount = async (priceThreshold = 0.9975) => {
+const USDH_THRESHOLD = process.env.USDH_THRESHOLD ? Number(process.env.USDH_THRESHOLD) : 0.9975;
+
+if (isNaN(USDH_THRESHOLD) || USDH_THRESHOLD >= 1) {
+    throw new Error("USDH_THRESHOLD must be a number under 1");
+}
+
+export const findMaxSafeTradeAmount = async (priceThreshold = USDH_THRESHOLD) => {
     let low = 0;
     let high = 1000000; // Start with $1M USD max
     let maxSafeAmount = 0;
