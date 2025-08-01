@@ -4,7 +4,8 @@ import { kvStoreGet, kvStoreSet } from "../db/helper";
 import type {
     AccrueInterestParams,
     CollateralParams, DebtParams, InterestRateParams, LpParams,
-    MarketState
+    MarketState,
+    PriceFeedItem
 } from "../types";
 
 export const getIrParamsLocal = (): InterestRateParams | null => {
@@ -52,6 +53,15 @@ export const setCollateralParamsLocal = (collateralParams: Record<string, Collat
     kvStoreSet(`collateral-params`, JSON.stringify(collateralParams));
 }
 
+export const getOnChainPriceFeed = (): Record<string, PriceFeedItem> | null => {
+    const r = kvStoreGet(`on-chain-price-feed`);
+    return r ? JSON.parse(r) : null;
+}
+
+export const setOnChainPriceFeed = (feed: Record<string, PriceFeedItem>) => {
+    kvStoreSet(`on-chain-price-feed`, JSON.stringify(feed));
+}
+
 export const setFlashLoanCapacityLocal = (params: Record<string, number>) => {
     kvStoreSet(`flash-loan-capacity`, JSON.stringify(params));
 }
@@ -75,6 +85,8 @@ export const getMarketState = (): MarketState => {
     assert(Object.keys(collateralParams).length > 0, 'collateralParams is empty');
     const flashLoanCapacity = getFlashLoanCapacityLocal();
     assert(flashLoanCapacity, 'flashLoanCapacity not found');
+    const onChainPriceFeed = getOnChainPriceFeed();
+    assert(onChainPriceFeed!==null, 'onChainPriceFeed not found');
 
     return {
         irParams,
@@ -85,7 +97,8 @@ export const getMarketState = (): MarketState => {
         marketAssetParams: {
             decimals: MARKET_ASSET_DECIMAL
         },
-        flashLoanCapacity
+        flashLoanCapacity,
+        onChainPriceFeed
     }
 }
 

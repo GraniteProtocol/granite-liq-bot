@@ -6,9 +6,11 @@ import {
     getFlashLoanCapacityLocal,
     getIrParamsLocal,
     getLpParamsLocal, getMarketState,
+    getOnChainPriceFeed,
     setAccrueInterestParamsLocal, setCollateralParamsLocal, setDebtParamsLocal,
     setFlashLoanCapacityLocal,
-    setIrParamsLocal, setLpParamsLocal
+    setIrParamsLocal, setLpParamsLocal,
+    setOnChainPriceFeed
 } from "./market";
 
 mock.module("../constants", () => {
@@ -102,7 +104,25 @@ describe("dba market", () => {
         expect(resp).toEqual({
             "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 102543,
         });
-    })
+    });
+
+    test("OnChainPriceFeed", () => {
+        setOnChainPriceFeed({
+            "btc": {
+                price: "11470000751501",
+                expo: -8,
+                publish_time: 1754045925,
+            }
+        });
+        const resp = getOnChainPriceFeed();
+        expect(resp).toEqual({
+            "btc": {
+                price: "11470000751501",
+                expo: -8,
+                publish_time: 1754045925,
+            }
+        })
+    });
 
 
     test("getMarketState", () => {
@@ -153,6 +173,9 @@ describe("dba market", () => {
         expect(() => { getMarketState() }).toThrow(Error('flashLoanCapacity not found'));
         setFlashLoanCapacityLocal({ 'ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc': 1025785 })
 
+        expect(() => { getMarketState() }).toThrow(Error('onChainPriceFeed not found'));
+        setOnChainPriceFeed({})
+
         const resp = getMarketState();
         expect(resp).toEqual({
             irParams: {
@@ -187,8 +210,27 @@ describe("dba market", () => {
             marketAssetParams: {
                 decimals: 6
             },
-            flashLoanCapacity: { "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 1025785 }
+            flashLoanCapacity: { "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 1025785 },
+            onChainPriceFeed: {
+            }
         });
+
+        setOnChainPriceFeed({
+            "btc": {
+                price: "11470000751501",
+                expo: -8,
+                publish_time: 1754045925,
+            }
+        });
+
+        const resp2 = getMarketState();
+        expect(resp2.onChainPriceFeed).toEqual({
+            "btc": {
+                price: "11470000751501",
+                expo: -8,
+                publish_time: 1754045925,
+            }
+        })
     });
 });
 

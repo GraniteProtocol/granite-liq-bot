@@ -1,4 +1,5 @@
-import type { Ticker } from "./client/pyth";
+import { config } from "granite-config";
+import type { PriceTicker } from "./types";
 
 export function hexToUint8Array(hexString: string): Uint8Array {
   // Remove any leading "0x" from the hex string if it exists
@@ -18,7 +19,7 @@ export function hexToUint8Array(hexString: string): Uint8Array {
   return bytes;
 }
 
-export const toTicker = (val: string): Ticker => {
+export const toTicker = (val: string): PriceTicker => {
   if (val.toLowerCase().indexOf("btc") !== -1) {
     return "btc"
   } else if (val.toLowerCase().indexOf("eth") !== -1) {
@@ -28,5 +29,8 @@ export const toTicker = (val: string): Ticker => {
   }
 
   throw new Error(`Invalid symbol: ${val}`);
+}
 
+export const getMarket = () => {
+  return process.env.USE_STAGING === "1" ? config.markets.MAINNET_STAGING : config.markets.MAINNET
 }

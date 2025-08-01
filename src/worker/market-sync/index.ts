@@ -1,11 +1,13 @@
-import { getAccrueInterestParams, getAssetBalance, getCollateralParams, getDebtParams, getIrParams, getLpParams } from "../../client/read-only-call";
+import { getAccrueInterestParams, getAssetBalance, getCollateralParams, getDebtParams, getIrParams, getLpParams, getPythPriceFeed } from "../../client/read-only-call";
 import { CONTRACTS, MARKET_ASSET } from "../../constants";
 import {
     setAccrueInterestParamsLocal, setCollateralParamsLocal,
-    setDebtParamsLocal, setFlashLoanCapacityLocal, setIrParamsLocal, setLpParamsLocal
+    setDebtParamsLocal, setFlashLoanCapacityLocal, setIrParamsLocal, setLpParamsLocal,
+    setOnChainPriceFeed
 } from "../../dba/market";
+import { getMarket, toTicker } from "../../helper";
 import { createLogger } from "../../logger";
-import type { CollateralParams } from "../../types";
+import type { CollateralParams, PriceFeedItem } from "../../types";
 import { epoch } from "../../util";
 
 const logger = createLogger("market-sync");
@@ -61,13 +63,21 @@ const syncMarketState = async () => {
         lastSyncTs.collateralParams = now;
     }
 
-    if(lastSyncTs.flashLoanCapacity < now - 300){ // 5 mins
+    if (lastSyncTs.flashLoanCapacity < now - 300) { // 5 mins
         const flashLoanCapacity = await getAssetBalance(MARKET_ASSET, CONTRACTS.state);
-        setFlashLoanCapacityLocal({[MARKET_ASSET]: flashLoanCapacity});
+        setFlashLoanCapacityLocal({ [MARKET_ASSET]: flashLoanCapacity });
         lastSyncTs.flashLoanCapacity = now;
     }
 
-    // logger.info(`setPriceFeedLocal: ${JSON.stringify(priceFeed)}`);
+    const onChainPriceFeed: Record<string, PriceFeedItem> = {};
+    for (let coll of getMarket().collaterals) {
+        const feed = await getPythPriceFeed(`0x${coll.price_feed}`);
+        if (feed) {
+            onChainPriceFeed[toTicker(coll.contract.id)] = feed;
+        }
+    }
+    
+    setOnChainPriceFeed(onChainPriceFeed);
 }
 
 export const main = async () => {

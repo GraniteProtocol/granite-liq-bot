@@ -38,7 +38,14 @@ describe("health-sync lib", () => {
             marketAssetParams: {
                 decimals: 8
             },
-            flashLoanCapacity: { "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 0 }
+            flashLoanCapacity: { "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 0 },
+            onChainPriceFeed: {
+                "btc": {
+                    price: "11470000751501",
+                    expo: -8,
+                    publish_time: 1754045925,
+                }
+            }
         };
 
         const borrower = {
@@ -104,7 +111,14 @@ describe("health-sync lib", () => {
             marketAssetParams: {
                 decimals: 8
             },
-            flashLoanCapacity: { "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 0 }
+            flashLoanCapacity: { "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 0 },
+            onChainPriceFeed: {
+                "btc": {
+                    price: "11470000751501",
+                    expo: -8,
+                    publish_time: 1754045925,
+                }
+            }
         }
 
         const borrower = {

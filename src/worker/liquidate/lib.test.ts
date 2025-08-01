@@ -519,48 +519,9 @@ describe("makeLiquidationTxOptions", () => {
 
     const priceFeed = {
         "attestation": "504e41550100000003b",
-        "items": {
-            "btc": {
-                "id": "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
-                "price": {
-                    "price": "10384556671615",
-                    "conf": "3561855687",
-                    "expo": -8,
-                    "publish_time": 1747405182
-                },
-                "ema_price": {
-                    "price": "10372757800000",
-                    "conf": "3972950400",
-                    "expo": -8,
-                    "publish_time": 1747405182
-                },
-                "metadata": {
-                    "slot": 217289634,
-                    "proof_available_time": 1747405183,
-                    "prev_publish_time": 1747405181
-                }
-            },
-            "usdc": {
-                "id": "eaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a",
-                "price": {
-                    "price": "99993806",
-                    "conf": "50216",
-                    "expo": -8,
-                    "publish_time": 1747405182
-                },
-                "ema_price": {
-                    "price": "99989672",
-                    "conf": "63697",
-                    "expo": -8,
-                    "publish_time": 1747405182
-                },
-                "metadata": {
-                    "slot": 217289634,
-                    "proof_available_time": 1747405183,
-                    "prev_publish_time": 1747405181
-                }
-            }
-        }
+        "price": "10384556671615",
+        "expo": -8,
+        "publish_time": 1747405182
     }
 
     const swap = { dex: 2, dy: 1000 };

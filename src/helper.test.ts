@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { toTicker } from "./helper";
+import { GRANITE_MARKETS } from "granite-config";
+import { getMarket, toTicker } from "./helper";
 
 describe("helper", () => {
     test("toTicker", () => {
@@ -10,6 +11,16 @@ describe("helper", () => {
         expect(toTicker("SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token")).toEqual("btc");
         expect(toTicker("aeUSDC")).toEqual("usdc");
         expect(toTicker("sBTC")).toEqual("btc");
+    });
+
+    test("getMarket mainnet", () => {
+        expect(getMarket().chain_id).toBe(GRANITE_MARKETS.MAINNET);
+    });
+
+    test("getMarket mainnet staging", () => {
+        process.env.USE_STAGING = "1";
+        expect(getMarket().chain_id).toBe(GRANITE_MARKETS.MAINNET_STAGING);
+        process.env.USE_STAGING = "";
     });
 });
 

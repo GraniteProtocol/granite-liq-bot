@@ -1,11 +1,10 @@
-import { config } from "granite-config";
-import type { Ticker } from "./client/pyth";
-import { toTicker } from "./helper";
+import { getMarket, toTicker } from "./helper";
+import type { PriceTicker } from "./types";
 import { assertEnvVar, assertNumericEnvVar } from "./util";
 
 export const USE_STAGING = process.env.USE_STAGING === "1";
 
-const market = USE_STAGING ? config.markets.MAINNET_STAGING : config.markets.MAINNET;
+const market =  getMarket();
 const { contracts } = market;
 
 export const IR_PARAMS_SCALING_FACTOR = market.scaling_factor.toString().match(/0/g)!.length;
@@ -26,7 +25,7 @@ export const CONTRACTS: {
     collaterals: market.collaterals.map(x => `${x.contract.principal}.${x.contract.name}`)
 };
 
-export const PRICE_FEED_IDS: { ticker: Ticker, feed_id: string }[] = [...market.collaterals, market.market_asset]
+export const PRICE_FEED_IDS: { ticker: PriceTicker, feed_id: string }[] = [...market.collaterals, market.market_asset]
     .map(a => ({ ticker: toTicker(a.display_name), feed_id: `0x${a.price_feed!}` }));
 
 export const MIN_TO_LIQUIDATE = assertNumericEnvVar("MIN_TO_LIQUIDATE", 4)
@@ -43,3 +42,5 @@ export const LIQUIDATON_CAP = assertNumericEnvVar("LIQUIDATON_CAP");
 export const ALERT_BALANCE = assertNumericEnvVar("ALERT_BALANCE", 1);
 export const HAS_HIRO_API_KEY = process.env.HIRO_API_KEY !== undefined;
 export const GRANITE_RPC = assertEnvVar("GRANITE_RPC");
+export const PRICE_FEED_FRESHNESS_THRESHOLD = 300; // 5 min
+export const PRICE_FEED_FRESHNESS_BUFFER = 60; // 60 secs

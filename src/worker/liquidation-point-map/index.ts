@@ -1,34 +1,26 @@
 import assert from "assert";
-import { config } from "granite-config";
-import { fetchAndProcessPriceFeed } from "../../client/pyth";
-import { USE_STAGING } from "../../constants";
 import { kvStoreSet } from "../../db/helper";
 import { getBorrowerCollateralAmount, getBorrowersForHealthCheck } from "../../dba/borrower";
 import { getMarketState } from "../../dba/market";
-import { toTicker } from "../../helper";
+import { getMarket, toTicker } from "../../helper";
+import { getPriceFeed } from "../../price-feed";
 import { calcBorrowerStatus } from "../health-sync/lib";
 import { generateDescendingPriceBuckets } from "./lib";
-
-const market = USE_STAGING ? config.markets.MAINNET_STAGING : config.markets.MAINNET;
 
 type LiquidationPoint = { liquidationPriceUSD: number, liquidatedAmountUSD: number };
 
 export const worker = async () => {
-    const priceFeed = await fetchAndProcessPriceFeed();
     const marketState = getMarketState();
     const borrowers = getBorrowersForHealthCheck();
 
     const map: Record<string, LiquidationPoint[]> = {}
 
-    for (let coll of market.collaterals) {
+    for (let coll of getMarket().collaterals) {
         const collateral = `${coll.contract.principal}.${coll.contract.name}`;
         const ticker = toTicker(collateral);
-        const feed = priceFeed.items[ticker];
-        if (!feed) {
-            throw new Error(`No price feed found for ${collateral}`);
-        }
-        const price = Number(feed.price.price);
-        const decimals = -1 * feed.price.expo;
+        const feed = await getPriceFeed(ticker, marketState);
+        const price = Number(feed.price);
+        const decimals = -1 * feed.expo;
         const buckets = generateDescendingPriceBuckets(price, 100, 300, decimals);
         const data: LiquidationPoint[] = [];
 

@@ -1,32 +1,6 @@
 import { PRICE_FEED_IDS } from "../constants";
+import type { PriceFeedResponse } from "../types";
 
-export type Ticker = "btc" | "eth" | "usdc";
-
-type PriceFeedItem = {
-  id: string,
-  price: {
-    price: string,
-    conf: string,
-    expo: number,
-    publish_time: number,
-  },
-  ema_price: {
-    price: string,
-    conf: string,
-    expo: number,
-    publish_time: number,
-  },
-  metadata: {
-    slot: number,
-    proof_available_time: number,
-    prev_publish_time: number,
-  },
-}
-
-export type PriceFeedResponse = {
-  attestation: string,
-  items: Record<string, PriceFeedItem>
-}
 
 export async function fetchAndProcessPriceFeed(): Promise<PriceFeedResponse> {
   const feedParams = PRICE_FEED_IDS.map((t) => `ids[]=${t.feed_id}`).join('&');
@@ -41,7 +15,8 @@ export async function fetchAndProcessPriceFeed(): Promise<PriceFeedResponse> {
   const attestation = result.binary.data[0];
   const items = result.parsed.reduce(
     (acc: any, item: any, index: number) => {
-      acc[PRICE_FEED_IDS[index].ticker] = item
+      const { price, expo, publish_time } = item.price;
+      acc[PRICE_FEED_IDS[index].ticker] = { price, expo, publish_time };
       return acc;
     },
     {}

@@ -1,6 +1,5 @@
 import { broadcastTransaction, makeContractCall } from "@stacks/transactions";
 import { fetchFn, getAccountNonces } from "../../client/hiro";
-import { fetchAndProcessPriceFeed } from "../../client/pyth";
 import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, SKIP_SWAP_CHECK, USE_FLASH_LOAN, USE_USDH } from "../../constants";
 import { getBorrowerStatusList, getBorrowersToSync } from "../../dba/borrower";
 import { getContractList, getContractOperatorPriv, lockContract } from "../../dba/contract";
@@ -11,6 +10,7 @@ import { estimateTxFeeOptimistic } from "../../fee";
 import { toTicker } from "../../helper";
 import { onLiqSwapOutError, onLiqTx, onLiqTxError } from "../../hooks";
 import { createLogger } from "../../logger";
+import { getPriceFeed } from "../../price-feed";
 import { formatUnits } from "../../units";
 import { calcMinOut, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions } from "./lib";
 
@@ -55,13 +55,9 @@ const worker = async () => {
     const marketState = getMarketState();
     const liquidationPremium = marketState.collateralParams[collateralAsset.address].liquidationPremium;
 
-    const priceFeed = await fetchAndProcessPriceFeed();
-    const cFeed = priceFeed.items[toTicker(collateralAsset.symbol)];
-    if (!cFeed) {
-        throw new Error("Collateral asset price feed not found");
-    }
-    const collateralPrice = Number(cFeed.price.price);
-    const collateralPriceFormatted = formatUnits(collateralPrice, Math.abs(cFeed.price.expo)).toFixed(2);
+    const priceFeed = await getPriceFeed(toTicker(collateralAsset.symbol), marketState);
+    const collateralPrice = Number(priceFeed.price);
+    const collateralPriceFormatted = formatUnits(collateralPrice, Math.abs(priceFeed.expo)).toFixed(2);
 
     const flashLoanCapacityBn = USE_FLASH_LOAN ? (marketState.flashLoanCapacity[marketAsset.address] || 0) : 0;
 
@@ -88,7 +84,7 @@ const worker = async () => {
 
     // Swap check
     const minExpected = formatUnits(calcMinOut(spendBn, contract.unprofitabilityThreshold), marketAsset.decimals);
-    const usdhContext = USE_USDH ? { btcPriceBn: BigInt(cFeed.price.price), minterContract: contract.id } : undefined;
+    const usdhContext = USE_USDH ? { btcPriceBn: BigInt(priceFeed.price), minterContract: contract.id } : undefined;
     const swap = await estimateSbtcToAeusdc(receive, usdhContext);
     const dex = getDexNameById(swap.dex);
 

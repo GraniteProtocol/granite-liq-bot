@@ -1,9 +1,10 @@
 import { contractPrincipalCV, cvToJSON, fetchCallReadOnlyFunction, principalCV } from "@stacks/transactions";
+import { bufferFromHex } from "@stacks/transactions/dist/cl";
 import { CONTRACTS } from "../constants";
+import { getMarket } from "../helper";
 import type { AccrueInterestParams, BorrowerPositionEntity, CollateralParams, DebtParams, InterestRateParams, LpParams } from "../types";
 import { type AssetInfo } from '../types';
 import { fetchFn, } from "./hiro";
-
 
 export const getIrParams = async (): Promise<InterestRateParams> => {
   const [contractAddress, contractName] = CONTRACTS.ir.split(".");
@@ -257,5 +258,35 @@ export const getLiquidatorContractInfo = async (address: string) => {
     unprofitabilityThreshold,
     flashLoanSc,
     usdhThreshold
+  }
+}
+
+export const getPythPriceFeed = async (priceId: string) => {
+  const { principal: contractAddress, name: contractName } = getMarket().contracts.PYTH_STORAGE;
+
+  const resp = await fetchCallReadOnlyFunction({
+    contractAddress,
+    contractName,
+    functionName: 'read-price-with-staleness-check',
+    functionArgs: [
+      bufferFromHex(priceId)
+    ],
+    senderAddress: contractAddress,
+    network: 'mainnet',
+    client: {
+      fetch: fetchFn,
+    }
+  }).then(r => cvToJSON(r));
+
+  if (!resp?.value?.value) {
+    return null;
+  }
+
+  const { value } = resp.value;
+
+  return {
+    price: value.price.value,
+    expo: Number(value.expo.value),
+    publish_time: Number(value["publish-time"].value),
   }
 }

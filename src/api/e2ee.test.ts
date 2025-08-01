@@ -292,6 +292,8 @@ describe("api e2e", () => {
             MARKET_ASSET: "SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc",
             MIN_TO_LIQUIDATE: 4,
             MIN_TO_LIQUIDATE_PER_USER: 1,
+            PRICE_FEED_FRESHNESS_BUFFER: 60,
+            PRICE_FEED_FRESHNESS_THRESHOLD: 300,
             PRICE_FEED_IDS: [
                 {
                     ticker: "btc",
