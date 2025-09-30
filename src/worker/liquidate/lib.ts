@@ -3,7 +3,7 @@ import { bufferCV, contractPrincipalCV, listCV, noneCV, PostConditionMode, princ
 import { LIQUIDATON_POS_COUNT_MAX, LIQUIDATON_POS_COUNT_MIN, MIN_TO_LIQUIDATE_PER_USER, TX_TIMEOUT, USDH_RESERVE_CONTRACT, USDH_SLIPPAGE_TOLERANCE } from "../../constants";
 import { getUsdhState } from "../../dba/usdh";
 import { DEX_USDH_FLASH_LOAN, type SwapInfo } from "../../dex";
-import { hexToUint8Array, toTicker } from "../../helper";
+import { hexToUint8Array } from "../../helper";
 import type { ContractEntity, LiquidationBatch, LiquidationBatchWithStats, PriceFeedResponseMixed } from "../../types";
 import { type AssetInfoWithBalance, type BorrowerStatusEntity } from "../../types";
 import { formatUnits, parseUnits, toFixedDown } from "../../units";
@@ -122,8 +122,6 @@ export const makeLiquidationTxOptions = (
 
     const marketAsset = contract.marketAsset!;
     const batchCV = liquidationBatchCv(batchInfo.batch);
-    const collateralAsset = contract.collateralAsset!;
-    const cFeed = priceFeed.items[toTicker(collateralAsset.symbol)]!;
 
     const baseTxOptions = {
         senderKey: priv,
@@ -145,7 +143,6 @@ export const makeLiquidationTxOptions = (
                             batch: batchCV,
                             deadline: uintCV(deadline),
                             dex: uintCV(DEX_USDH_FLASH_LOAN),
-                            "btc-price": uintCV(cFeed.price),
                             "price-slippage-tolerance": uintCV(USDH_SLIPPAGE_TOLERANCE),
                             "reserve-contract": principalCV(USDH_RESERVE_CONTRACT)
                         })
@@ -173,7 +170,6 @@ export const makeLiquidationTxOptions = (
                 makePriceAttestationBuff(priceFeed.attestation),
                 batchCV,
                 uintCV(deadline),
-                uintCV(cFeed.price),
                 uintCV(USDH_SLIPPAGE_TOLERANCE),
                 principalCV(USDH_RESERVE_CONTRACT)
             ];
@@ -196,7 +192,6 @@ export const makeLiquidationTxOptions = (
                             batch: batchCV,
                             deadline: uintCV(deadline),
                             dex: uintCV(swap.dex),
-                            "btc-price": uintCV(0),
                             "price-slippage-tolerance": uintCV(0),
                             "reserve-contract": principalCV("SP000000000000000000002Q6VF78")
                         })
