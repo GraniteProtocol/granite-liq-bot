@@ -63,11 +63,17 @@ export const fetchFn = async (
                     throw new Error(`Invalid content-type: ${contentType}`);
                 }
 
-                // Validate JSON
-                const text = await r.clone().text();
+                // Ensure the response body is valid JSON by attempting to parse it.
+                // We do this because Hiro API occasionally returns an HTML error page
+                // while still setting the `Content-Type: application/json` header.
+                const text = await r.text();
                 JSON.parse(text);
 
-                return r;
+                return new Response(text, {
+                    status: r.status,
+                    statusText: r.statusText,
+                    headers: r.headers
+                });
             }
 
             lastError = new Error(`HTTP ${r.status}: ${await r.text()}`);
