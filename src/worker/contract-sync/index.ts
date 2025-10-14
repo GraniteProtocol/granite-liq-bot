@@ -61,7 +61,7 @@ export const worker = async () => {
         if (Number(oBalance) <= parseUnits(ALERT_BALANCE, 6)) {
             const strObalance = formatUnits(Number(oBalance), 6);
             logger.error(`Operator balance is low: ${strObalance} STX`)
-            await onLowFunds(`${strObalance} STX`);
+            await onLowFunds(`${strObalance} STX`, contract.operatorAddress);
         }
 
         const info = await getLiquidatorContractInfo(contract.id);

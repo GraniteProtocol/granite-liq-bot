@@ -68,6 +68,6 @@ export const onLiqTxEnd = async (txid: string, status: string) => {
     await slackMessage(`Info: Liquidation tx ${'`'}${txid}${'`'} finalized with status ${'`'}${status}${'`'}`);
 }
 
-export const onLowFunds = async (balance: string) => {
-    await slackMessage(`Warning: Operator balance is low: ${'`'}${balance}${'`'}`, balance);
+export const onLowFunds = async (balance: string, address: string) => {
+    await slackMessage(`Warning: Operator balance is low: ${'`'}${balance}${'`'}, Send funds to: ${address}`, balance);
 }
