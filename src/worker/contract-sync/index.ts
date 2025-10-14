@@ -12,13 +12,25 @@ import { formatUnits, parseUnits } from "../../units";
 import { epoch } from "../../util";
 import { getLiquidatedPrincipals } from "./lib";
 
-const logger = createLogger("sync-contract");
-
-const handleContractLocks = async (contract: ContractEntity) => {
-
+export const handleContractLocks = async (contract: ContractEntity) => {
+    const logger = createLogger("sync-contract");
     if (contract.lockTx && contract.unlocksAt === null) {
         const tx = await getTransaction(contract.lockTx, 'mainnet');
         if (tx.tx_status && tx.tx_status !== "pending") {
+
+            // Tx failed, no need to wait, unlock immediatily.
+            if (tx.tx_status.startsWith("abort_by_")) {
+                //  unlock immediatily
+                unlockContract(contract.id);
+                logger.info(`transaction ${contract.lockTx} completed as ${tx.tx_status}. contract ${contract.id} unlocked`);
+
+                // finalize liquidation
+                finalizeLiquidation(contract.lockTx, tx.tx_status);
+                
+                await onLiqTxEnd(contract.lockTx, tx.tx_status);
+                return;
+            }
+
             // schedule unlock
             unlockContractSchedule(epoch() + CONTRACT_UNLOCK_DELAY, contract.id);
             logger.info(`transaction ${contract.lockTx} completed as ${tx.tx_status}. contract ${contract.id} will be unlocked in ${CONTRACT_UNLOCK_DELAY} seconds`);
@@ -48,6 +60,8 @@ const handleContractLocks = async (contract: ContractEntity) => {
 }
 
 export const worker = async () => {
+    const logger = createLogger("sync-contract");
+
     const contracts = getContractList({});
     for (const contract of contracts) {
         await handleContractLocks(contract);
