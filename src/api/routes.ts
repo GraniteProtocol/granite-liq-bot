@@ -1,12 +1,13 @@
 import {
-    getAddressFromPrivateKey
+    getAddressFromPrivateKey,
+    validateStacksAddress
 } from "@stacks/transactions";
 import { generateWallet } from "@stacks/wallet-sdk";
 import { getContractInfo } from "../client/hiro";
 import { getAssetInfo, getLiquidatorContractInfo } from "../client/read-only-call";
 import * as constants from "../constants";
 import { kvStoreGet } from "../db/helper";
-import { getBorrowerStatusList } from "../dba/borrower";
+import { getBorrowerStatusList, upsertBorrower } from "../dba/borrower";
 import { getContractList, insertContract } from "../dba/contract";
 import { getLiquidationList } from "../dba/liquidation";
 import type { Filter } from "../dba/sql";
@@ -113,6 +114,23 @@ export const routes = {
         });
 
         return Response.json(borrowers);
+    },
+    upsertBorrower: async (req: Request) => {
+        const { searchParams } = new URL(req.url);
+
+        const address = searchParams.get('address');
+
+        if (!address) {
+            return errorResponse('Enter an address');
+        }
+
+        if (!validateStacksAddress(address)) {
+            return errorResponse('Invalid address');
+        }
+
+        const resp = upsertBorrower(address);
+
+        return Response.json(resp);
     },
     health: async () => {
         const lastSync = kvStoreGet("last-sync");
