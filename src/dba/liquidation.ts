@@ -34,3 +34,9 @@ export const getLiquidationList = (args: {
         nonce: Number(row.nonce)
     }));
 }
+
+export const getLiquidationByTxId = (txid: string): LiquidationEntity | undefined => {
+    return getLiquidationList({
+        filters: [['txid', '=', txid]],
+    })[0]
+}

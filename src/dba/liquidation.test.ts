@@ -1,5 +1,5 @@
 import { describe, expect, setSystemTime, test } from "bun:test";
-import { finalizeLiquidation, getLiquidationList, insertLiquidation } from "./liquidation";
+import { finalizeLiquidation, getLiquidationByTxId, getLiquidationList, insertLiquidation } from "./liquidation";
 
 describe("dba contracts", () => {
     test("insertLiquidation", () => {
@@ -31,4 +31,20 @@ describe("dba contracts", () => {
             nonce: 3
         }]);
     });
+
+    test("getLiquidationByTxId", () => {
+        expect(getLiquidationByTxId('0x00')).toEqual({
+            txid: "0x00",
+            contract: "SP1AK5J442ET8N7AAWSSNGGZZD1PZ6X9JD1FW551T.liquidator",
+            status: "success",
+            createdAt: 1738262052,
+            updatedAt: 1738262062,
+            fee: 200,
+            nonce: 3
+        });
+    })
+
+    test("getLiquidationByTxId", () => {
+        expect(getLiquidationByTxId('0x001') === undefined).toBe(true);
+    })
 });
