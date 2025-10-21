@@ -1,17 +1,19 @@
 import { broadcastTransaction, makeContractCall } from "@stacks/transactions";
+import assert from "node:assert";
 import { fetchFn, getAccountNonces } from "../../client/hiro";
-import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, SKIP_SWAP_CHECK, USE_FLASH_LOAN, USE_USDH } from "../../constants";
+import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, RBF_THRESHOLD, SKIP_SWAP_CHECK, USE_FLASH_LOAN, USE_USDH } from "../../constants";
 import { getBorrowerStatusList, getBorrowersToSync } from "../../dba/borrower";
 import { getContractList, getContractOperatorPriv, lockContract } from "../../dba/contract";
-import { insertLiquidation } from "../../dba/liquidation";
+import { finalizeLiquidation, getLiquidationByTxId, insertLiquidation } from "../../dba/liquidation";
 import { getMarketState } from "../../dba/market";
 import { estimateSbtcToAeusdc, getDexNameById } from "../../dex";
-import { estimateTxFeeOptimistic } from "../../fee";
+import { estimateRbfMultiplier, estimateTxFeeOptimistic } from "../../fee";
 import { toTicker } from "../../helper";
 import { onLiqSwapOutError, onLiqTx, onLiqTxError } from "../../hooks";
 import { createLogger } from "../../logger";
 import { getPriceFeed } from "../../price-feed";
 import { formatUnits } from "../../units";
+import { epoch } from "../../util";
 import { calcMinOut, limitBorrowers, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions } from "./lib";
 
 const logger = createLogger("liquidate");
@@ -26,9 +28,18 @@ const worker = async () => {
         return;
     }
 
+    let rbfInfo: { txid: string, nonce: number, fee: number } | null = null;
+
     if (contract.lockTx) {
-        // logger.info("Contract is locked, skipping");
-        return;
+        const liquidation = getLiquidationByTxId(contract.lockTx);
+        assert(liquidation, "couldn't find liquidation");
+        if (epoch() - liquidation.createdAt >= RBF_THRESHOLD) {
+            rbfInfo = { txid: contract.lockTx, nonce: liquidation.nonce, fee: liquidation.fee };
+            logger.info("Doing RBF");
+        } else {
+            // logger.info("Contract is locked, skipping");
+            return;
+        }
     }
 
     if (getBorrowersToSync().length > 0) {
@@ -110,8 +121,8 @@ const worker = async () => {
     }
 
     const priv = getContractOperatorPriv(contract.id)!;
-    const nonce = (await getAccountNonces(contract.operatorAddress, 'mainnet')).possible_next_nonce;
-    const fee = await estimateTxFeeOptimistic();
+    const nonce = rbfInfo ? rbfInfo.nonce : (await getAccountNonces(contract.operatorAddress, 'mainnet')).possible_next_nonce;
+    const fee = rbfInfo ? rbfInfo.fee * await estimateRbfMultiplier() : await estimateTxFeeOptimistic();
 
     const txOptions = makeLiquidationTxOptions({
         contract,
@@ -139,6 +150,9 @@ const worker = async () => {
     }
 
     if (tx.txid) {
+        if (rbfInfo) {
+            finalizeLiquidation(rbfInfo.txid, 'dropped');
+        }
         lockContract(tx.txid, contract.id);
         insertLiquidation(tx.txid, contract.id, fee, nonce);
         logger.info('Transaction broadcasted', {

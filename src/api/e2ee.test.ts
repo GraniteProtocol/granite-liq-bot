@@ -313,6 +313,7 @@ describe("api e2e", () => {
                     feed_id: "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a",
                 }
             ],
+            RBF_THRESHOLD: 15,
             SKIP_SWAP_CHECK: false,
             TX_TIMEOUT: 600,
             USDH_RESERVE_CONTRACT: "SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.redeeming-reserve-v1-1",
