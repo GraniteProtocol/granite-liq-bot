@@ -40,7 +40,7 @@ const prepareTestDb = () => {
     });
 
     `
-        53bdce5437e1346b44eda525c8d4c98c7faf09abe37b8b85ee40778e9eed36c4|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.liquidator|success|1743168820|1743168837
+        53bdce5437e1346b44eda525c8d4c98c7faf09abe37b8b85ee40778e9eed36c4|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.liquidator|success|1743168820|1743168837|200|1
         `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
         dbCon.run(insert(r, 'liquidation'));
     });
