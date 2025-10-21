@@ -140,7 +140,7 @@ const worker = async () => {
 
     if (tx.txid) {
         lockContract(tx.txid, contract.id);
-        insertLiquidation(tx.txid, contract.id);
+        insertLiquidation(tx.txid, contract.id, fee, nonce);
         logger.info('Transaction broadcasted', {
             txid: tx.txid,
             collateralPrice: `${collateralPriceFormatted} usd (${collateralPrice})`,
