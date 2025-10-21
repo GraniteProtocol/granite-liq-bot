@@ -7,6 +7,10 @@ export const main = async () => {
             const url = new URL(req.url);
             let res: Response;
 
+            if(req.method === "HEAD"){
+                return new Response("", { status: 200 });
+            }
+
             if (req.method === "GET" && url.pathname === "/contracts") {
                 res = await routes.getContracts(req);
             } else if (req.method === "POST" && url.pathname === "/add-contract") {
