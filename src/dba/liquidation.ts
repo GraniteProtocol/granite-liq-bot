@@ -30,7 +30,7 @@ export const getLiquidationList = (args: {
         status: row.status,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
-        fee: row.fee,
-        nonce: row.nonce
+        fee: Number(row.fee),
+        nonce: Number(row.nonce)
     }));
 }
