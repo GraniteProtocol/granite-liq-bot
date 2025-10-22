@@ -80,7 +80,16 @@ const priceFeed: PriceFeedResponseMixed = {
     }
 };
 
+
 describe("liquidateWorker", () => {
+    const loggerMocked = mock(() => { });
+    mock.module('../../logger', () => ({
+        createLogger: () => ({
+            info: loggerMocked,
+            error: loggerMocked
+        })
+    }));
+
     beforeEach(() => {
         mock.restore();
     });

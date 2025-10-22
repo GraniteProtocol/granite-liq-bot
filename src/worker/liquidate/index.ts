@@ -16,9 +16,9 @@ import { formatUnits } from "../../units";
 import { epoch } from "../../util";
 import { calcMinOut, limitBorrowers, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions } from "./lib";
 
-const logger = createLogger("liquidate");
-
 export const liquidateWorker = async () => {
+    const logger = createLogger("liquidate");
+
     const contract = (getContractList({
         orderBy: 'CAST(market_asset_balance AS REAL) DESC'
     }))[0];
