@@ -18,7 +18,7 @@ import { calcMinOut, limitBorrowers, makeLiquidationBatch, makeLiquidationCap, m
 
 const logger = createLogger("liquidate");
 
-const worker = async () => {
+export const liquidateWorker = async () => {
     const contract = (getContractList({
         orderBy: 'CAST(market_asset_balance AS REAL) DESC'
     }))[0];
@@ -171,5 +171,5 @@ const worker = async () => {
 }
 
 export const main = async () => {
-    await worker();
+    await liquidateWorker();
 }
