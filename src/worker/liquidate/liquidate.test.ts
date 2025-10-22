@@ -15,7 +15,7 @@ const contract: ContractEntity = {
         decimals: 6,
         name: "Ethereum USDC via Allbridge",
         symbol: "aeUSDC",
-        balance: 0,
+        balance: 12321198,
     },
     collateralAsset: {
         address: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
@@ -211,12 +211,84 @@ describe("liquidateWorker", () => {
         expect(calcMinOutMocked).toHaveBeenCalledTimes(0);
     });
 
-    test("liquidable position, liquidate", () => {
-        // shouldn't call finalizeLiquidation because no rbf
-        // should call lockContract
-        // should call insertLiquidation
-        // should call onLiqTx
-    })
+    test("liquidable position, swap out error", async () => {
+        const getContractListMocked = mock(() => [contract]);
+        mock.module("../../dba/contract", () => ({
+            getContractList: getContractListMocked
+        }));
+
+        const getBorrowersToSyncMocked = mock(() => []);
+        const getBorrowerStatusListMocked = mock(() => [
+            {
+                address: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
+                ltv: 0.5038,
+                health: 0.9726,
+                debt: 35.7413,
+                collateral: 70.9416,
+                risk: 1.0282,
+                maxRepay: {
+                    "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 8.125664850930649,
+                },
+                totalRepayAmount: 8.125664850930649,
+            }
+        ]);
+        mock.module("../../dba/borrower", () => ({
+            getBorrowersToSync: getBorrowersToSyncMocked,
+            getBorrowerStatusList: getBorrowerStatusListMocked
+        }));
+
+        const getLiquidationByTxIdMocked = mock(() => []);
+        mock.module("../../dba/liquidation", () => ({
+            getLiquidationByTxId: getLiquidationByTxIdMocked,
+        }));
+
+        const getMarketStateMocked = mock(() => (marketState));
+        mock.module("../../dba/market", () => ({
+            getMarketState: getMarketStateMocked,
+        }));
+
+        const getPriceFeedMocked = mock(() => (priceFeed));
+        mock.module("../../price-feed", () => ({
+            getPriceFeed: getPriceFeedMocked
+        }));
+
+        const calcMinOutMocked = mock(() => 8100000);
+        mock.module("./lib", () => ({
+            calcMinOut: calcMinOutMocked
+        }));
+
+        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 2, dy: 8 }))
+        mock.module("../../dex", () => ({
+            estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
+        }));
+
+        const onLiqSwapOutErrorMocked = mock(() => { });
+        mock.module("../../hooks", () => ({
+            onLiqSwapOutError: onLiqSwapOutErrorMocked
+        }));
+
+        const getContractOperatorPrivMocked = mock(() => {});
+        mock.module("../../dba/contract", () => ({
+            getContractOperatorPriv: getContractOperatorPrivMocked
+        }));
+
+        await liquidateWorker();
+
+        expect(getContractListMocked).toHaveBeenCalledTimes(1);
+        expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
+        expect(getBorrowersToSyncMocked).toHaveBeenCalledTimes(1);
+        expect(getBorrowerStatusListMocked).toHaveBeenCalledTimes(1);
+        expect(getMarketStateMocked).toHaveBeenCalledTimes(1);
+        expect(getPriceFeedMocked).toHaveBeenCalledTimes(1);
+        expect(calcMinOutMocked).toHaveBeenCalledTimes(1);
+        expect(estimateSbtcToAeusdcMocked).toHaveBeenCalledTimes(1);
+        expect(onLiqSwapOutErrorMocked).toHaveBeenCalledTimes(1);
+        expect(getContractOperatorPrivMocked).toHaveBeenCalledTimes(0);
+    });
+
+    test("liquidable position, liquidate", async () => {
+
+    });
 
     test("liquidable position, liquidate but tx error", () => {
         // should call onLiqTxError
