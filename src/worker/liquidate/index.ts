@@ -32,7 +32,7 @@ const worker = async () => {
 
     if (contract.lockTx) {
         const liquidation = getLiquidationByTxId(contract.lockTx);
-        assert(liquidation, "couldn't find liquidation");
+        assert(liquidation, "can't find liquidation");
         if (epoch() - liquidation.createdAt >= RBF_THRESHOLD) {
             rbfInfo = { txid: contract.lockTx, nonce: liquidation.nonce, fee: liquidation.fee };
             logger.info("Doing RBF");
