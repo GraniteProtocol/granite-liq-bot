@@ -658,5 +658,36 @@ describe("liquidateWorker", () => {
         expect(lockContractMocked.mock.calls[0]).toEqual(["0x01", "SPNS4V1TMDVNK1GXHP9XQ7PD4HR02GSDQ0THDCM.contract"] as any);
         expect(insertLiquidationMocked).toHaveBeenCalledTimes(1);
         expect(onLiqTxMocked).toHaveBeenCalledTimes(1);
-    })
+    });
+
+    test("test rbf threshold", async () => {
+        const getContractListMocked = mock(() => [{ ...contract, lockTx: '0x00' }]);
+        mock.module("../../dba/contract", () => ({
+            getContractList: getContractListMocked
+        }));
+
+        const getBorrowersToSyncMocked = mock(() => []);
+        mock.module("../../dba/borrower", () => ({
+            getBorrowersToSync: getBorrowersToSyncMocked,
+        }));
+
+        const getLiquidationByTxIdMocked = mock(() => ({
+            txid: '0x00',
+            contract: 'SPNS4V1TMDVNK1GXHP9XQ7PD4HR02GSDQ0THDCM.contract',
+            status: 'pending',
+            createdAt: epoch() - (RBF_THRESHOLD - 1),
+            updatedAt: null,
+            fee: 400000,
+            nonce: 14
+        }));
+        mock.module("../../dba/liquidation", () => ({
+            getLiquidationByTxId: getLiquidationByTxIdMocked,
+        }));
+
+        await liquidateWorker();
+
+        expect(getContractListMocked).toHaveBeenCalledTimes(1);
+        expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(1);
+        expect(getBorrowersToSyncMocked).toHaveBeenCalledTimes(0);
+    });
 })
