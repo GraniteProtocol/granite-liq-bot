@@ -581,8 +581,10 @@ describe("liquidateWorker", () => {
         }));
 
         const calcMinOutMocked = mock(() => 7900000);
+        const makeLiquidationTxOptionsMocked = mock(() => {});
         mock.module("./lib", () => ({
-            calcMinOut: calcMinOutMocked
+            calcMinOut: calcMinOutMocked,
+            makeLiquidationTxOptions: makeLiquidationTxOptionsMocked
         }));
 
         const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 2, dy: 8 }))
@@ -600,7 +602,7 @@ describe("liquidateWorker", () => {
             getContractOperatorPriv: getContractOperatorPrivMocked
         }));
 
-        const getAccountNoncesMocked = mock(async () => ({ possible_next_nonce: 14 }));
+        const getAccountNoncesMocked = mock(async () => ({ possible_next_nonce: 15 }));
         mock.module("../../client/hiro", () => ({
             getAccountNonces: getAccountNoncesMocked
         }));
@@ -649,6 +651,8 @@ describe("liquidateWorker", () => {
         expect(getAccountNoncesMocked).toHaveBeenCalledTimes(0);
         expect(estimateTxFeeOptimisticMocked).toHaveBeenCalledTimes(0);
         expect(estimateRbfMultiplierMocked).toHaveBeenCalledTimes(1);
+        expect((makeLiquidationTxOptionsMocked.mock.calls[0] as any)[0].fee).toEqual(560000);
+        expect((makeLiquidationTxOptionsMocked.mock.calls[0] as any)[0].nonce).toEqual(14);
         expect(makeContractCallMocked).toHaveBeenCalledTimes(1);
         expect(broadcastTransactionMocked).toHaveBeenCalledTimes(1);
         expect(onLiqTxErrorMocked).toHaveBeenCalledTimes(0);
