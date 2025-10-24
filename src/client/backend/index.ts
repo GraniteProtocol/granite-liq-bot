@@ -3,7 +3,7 @@ import type { LiquidationsResponse, MarketInfoResponse, UserInfoResponse } from 
 
 const baseUrl = USE_STAGING ? 'https://api-staging.granite.world' : 'https://api.granite.world';
 
-export const fetchGetMarketState = async (): Promise<MarketInfoResponse> => {
+export const fetchGetMarketInfo = async (): Promise<MarketInfoResponse> => {
     const url = `${baseUrl}/v1/market/info`;
     return fetch(url).then(r => r.json());
 };

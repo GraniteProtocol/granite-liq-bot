@@ -1,5 +1,6 @@
-import { getAccrueInterestParams, getAssetBalance, getCollateralParams, getDebtParams, getIrParams, getLpParams, getPythPriceFeed } from "../../client/read-only-call";
-import { CONTRACTS, MARKET_ASSET } from "../../constants";
+import { fetchGetMarketInfo } from "../../client/backend";
+import { getIrParams, getPythPriceFeed } from "../../client/read-only-call";
+import { MARKET_ASSET } from "../../constants";
 import {
     setAccrueInterestParamsLocal, setCollateralParamsLocal,
     setDebtParamsLocal, setFlashLoanCapacityLocal, setIrParamsLocal, setLpParamsLocal,
@@ -14,12 +15,6 @@ const logger = createLogger("market-sync");
 
 const lastSyncTs = {
     irParams: 0,
-    lpParams: 0,
-    accrueInterestParams: 0,
-    debtParams: 0,
-    collateralParams: 0,
-    priceFeed: 0,
-    flashLoanCapacity: 0
 }
 
 const syncMarketState = async () => {
@@ -32,42 +27,33 @@ const syncMarketState = async () => {
         lastSyncTs.irParams = now;
     }
 
-    if (lastSyncTs.lpParams < now - 300) { // 5 mins
-        const val = await getLpParams();
-        setLpParamsLocal(val);
-        //logger.info(`setLpParamsLocal: ${JSON.stringify(val)}`);
-        lastSyncTs.lpParams = now;
-    }
+    const marketInfo = await fetchGetMarketInfo();
 
-    if (lastSyncTs.accrueInterestParams < now - 300) { // 5 mins
-        const val = await getAccrueInterestParams();
-        setAccrueInterestParamsLocal(val);
-        // logger.info(`setAccrueInterestParamsLocal: ${JSON.stringify(val)}`);
-        lastSyncTs.accrueInterestParams = now;
-    }
+    setLpParamsLocal({
+        totalAssets: marketInfo.onchain_interest_params.total_assets,
+        totalShares: marketInfo.total_lp_shares
+    });
 
-    if (lastSyncTs.debtParams < now - 300) { // 5 mins
-        const val = await getDebtParams();
-        setDebtParamsLocal(val);
-        // logger.info(`setDebtParamsLocal: ${JSON.stringify(val)}`);
-        lastSyncTs.debtParams = now;
-    }
+    setAccrueInterestParamsLocal({
+        lastAccruedBlockTime: marketInfo.onchain_interest_params.last_accrued_block_time
+    });
 
-    if (lastSyncTs.collateralParams < now - 300) { // 5 mins
-        const collateralParams: Record<string, CollateralParams> = {};
-        for (const collateral of CONTRACTS.collaterals) {
-            collateralParams[collateral] = await getCollateralParams(collateral);
+    setDebtParamsLocal({
+        openInterest: marketInfo.onchain_interest_params.open_interest,
+        totalDebtShares: marketInfo.total_debt_shares
+    });
+
+    const collateralParams: Record<string, CollateralParams> = {};
+    for (const collateral of marketInfo.collaterals) {
+        collateralParams[collateral.id] = {
+            liquidationLTV: collateral.liquidation_ltv,
+            maxLTV: collateral.max_ltv,
+            liquidationPremium: collateral.liquidation_premium
         }
-        setCollateralParamsLocal(collateralParams);
-        // logger.info(`setCollateralParamsLocal: ${JSON.stringify(collateralParams)}`);
-        lastSyncTs.collateralParams = now;
     }
+    setCollateralParamsLocal(collateralParams);
 
-    if (lastSyncTs.flashLoanCapacity < now - 300) { // 5 mins
-        const flashLoanCapacity = await getAssetBalance(MARKET_ASSET, CONTRACTS.state);
-        setFlashLoanCapacityLocal({ [MARKET_ASSET]: flashLoanCapacity });
-        lastSyncTs.flashLoanCapacity = now;
-    }
+    setFlashLoanCapacityLocal({ [MARKET_ASSET]: marketInfo. market_token_balance});
 
     const onChainPriceFeed: Partial<Record<PriceTicker, PriceFeedItem>> = {};
     for (let coll of getMarket().collaterals) {
