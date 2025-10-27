@@ -16,7 +16,6 @@ const workerInner = async () => {
     await marketSync();
     await usdhSync();
     await liquidate();
-    await liquidationPointMapSync();
 }
 
 const worker = async () => {
@@ -36,4 +35,5 @@ export const main = async () => {
     console.log(CONTRACTS);
     console.log("--------------------------------");
     worker();
+    liquidationPointMapSync();
 }
