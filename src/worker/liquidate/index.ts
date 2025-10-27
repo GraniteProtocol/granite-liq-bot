@@ -1,7 +1,7 @@
 import { broadcastTransaction, makeContractCall } from "@stacks/transactions";
+import { getBorrowersToLiquidate } from "../../borrower";
 import { fetchFn, getAccountNonces } from "../../client/hiro";
 import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, SKIP_SWAP_CHECK, USE_FLASH_LOAN, USE_USDH } from "../../constants";
-import { getBorrowerStatusList, getBorrowersToSync } from "../../dba/borrower";
 import { getContractList, getContractOperatorPriv, lockContract } from "../../dba/contract";
 import { insertLiquidation } from "../../dba/liquidation";
 import { getMarketState } from "../../dba/market";
@@ -31,11 +31,6 @@ const worker = async () => {
         return;
     }
 
-    if (getBorrowersToSync().length > 0) {
-        // logger.info("Borrowers to sync found, skipping");
-        return;
-    }
-
     const { marketAsset, collateralAsset } = contract;
 
     if (!marketAsset) {
@@ -48,14 +43,11 @@ const worker = async () => {
         return;
     }
 
-    const borrowers = getBorrowerStatusList({
-        orderBy: 'total_repay_amount DESC'
-    });
-
     const marketState = getMarketState();
     const liquidationPremium = marketState.collateralParams[collateralAsset.address].liquidationPremium;
     const collateralTicker = toTicker(collateralAsset.symbol);
     const priceFeed = await getPriceFeed([collateralTicker], marketState);
+    const borrowers = await getBorrowersToLiquidate(marketState, priceFeed);
     const cFeed = priceFeed.items[collateralTicker]!;
     const collateralPrice = Number(cFeed.price);
     const collateralPriceFormatted = formatUnits(collateralPrice, Math.abs(cFeed.expo)).toFixed(2);
