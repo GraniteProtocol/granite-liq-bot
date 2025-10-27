@@ -1,4 +1,5 @@
 import assert from "assert";
+import { calcBorrowerStatus } from "../../borrower";
 import { kvStoreSet } from "../../db/helper";
 import { getMarketState } from "../../dba/market";
 import { getMarket, toTicker } from "../../helper";
@@ -6,7 +7,6 @@ import { createLogger } from "../../logger";
 import { getPriceFeed } from "../../price-feed";
 import type { PriceTicker } from "../../types";
 import { epoch } from "../../util";
-import { calcBorrowerStatus } from "../health-sync/lib";
 import { generateDescendingPriceBuckets, getBorrowers } from "./lib";
 
 const logger = createLogger("liquidation-point-map");

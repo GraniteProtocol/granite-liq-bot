@@ -1,5 +1,5 @@
 import { cvToJSON, deserializeCV } from "@stacks/transactions";
-import { describe, expect, it, mock, test } from "bun:test";
+import { describe, expect, it, mock, setSystemTime, test } from "bun:test";
 import type { AssetInfoWithBalance, BorrowerStatusEntity, LiquidationBatch } from "../../types";
 import { calcMinOut, limitBorrowers, liquidationBatchCv, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions, makePriceAttestationBuff } from "./lib";
 
@@ -460,6 +460,7 @@ test("calcMinOut", () => {
 });
 
 describe("makeLiquidationTxOptions", () => {
+    setSystemTime(1738262557287);
     const contract = {
         id: "SPT4BE98XGF7NSWV1V0ZK1YMS0KQ0A6X2X8EJ5EM.liquidator",
         address: "SPT4BE98XGF7NSWV1V0ZK1YMS0KQ0A6X2X8EJ5EM",
