@@ -1,6 +1,6 @@
 import assert from "assert";
+import { fetchGetBorrowerPositions } from "../../client/backend";
 import { kvStoreSet } from "../../db/helper";
-import { getBorrowerCollateralAmount, getBorrowersForHealthCheck } from "../../dba/borrower";
 import { getMarketState } from "../../dba/market";
 import { getMarket, toTicker } from "../../helper";
 import { getPriceFeed } from "../../price-feed";
@@ -10,9 +10,35 @@ import { generateDescendingPriceBuckets } from "./lib";
 
 type LiquidationPoint = { liquidationPriceUSD: number, liquidatedAmountUSD: number };
 
+const getBorrowers = async () => {
+    const borrowers: {
+        address: string,
+        debtShares: number,
+        collaterals: Record<string, number>
+    }[] = [];
+
+    let limit = 20;
+    let offset = 0;
+    const adresses: string[] = [];
+
+    while (true) {
+        const resp = await fetchGetBorrowerPositions(limit, offset);
+        for (const r of resp.data) {
+            if (adresses.indexOf(r.user) === -1) {
+                borrowers.push({ address: r.user, debtShares: r.debt_shares, collaterals: r.collateral_balances });
+                adresses.push(r.user);
+            }
+        }
+        if (resp.data.length < limit) break;
+        offset += limit;
+    }
+
+    return borrowers;
+}
+
 export const worker = async () => {
     const marketState = getMarketState();
-    const borrowers = getBorrowersForHealthCheck();
+    const borrowers = await getBorrowers();
     const market = getMarket();
     const tickers: PriceTicker[] = market.collaterals.map(x => toTicker(x.contract.id));
     const priceFeed = await getPriceFeed(tickers, marketState);
@@ -34,7 +60,7 @@ export const worker = async () => {
                 if (borrower.debtShares === 0) {
                     continue;
                 }
-                const amount = getBorrowerCollateralAmount(borrower.address, collateral);
+                const amount = borrower.collaterals[collateral];
                 assert(amount !== undefined, "User collateral amount is undefined");
                 const collateralsDeposited = {
                     [collateral]:
