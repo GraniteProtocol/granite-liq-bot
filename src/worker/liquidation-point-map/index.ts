@@ -6,9 +6,9 @@ import { getMarket, toTicker } from "../../helper";
 import { createLogger } from "../../logger";
 import { getPriceFeed } from "../../price-feed";
 import type { PriceTicker } from "../../types";
+import { epoch } from "../../util";
 import { calcBorrowerStatus } from "../health-sync/lib";
 import { generateDescendingPriceBuckets } from "./lib";
-
 
 const logger = createLogger("liquidation-point-map");
 
@@ -40,7 +40,7 @@ const getBorrowers = async () => {
     return borrowers;
 }
 
-export const workerInner = async () => {
+export const worker = async () => {
     const marketState = getMarketState();
     const borrowers = await getBorrowers();
     const market = getMarket();
@@ -89,16 +89,11 @@ export const workerInner = async () => {
     kvStoreSet("liquidation-map", JSON.stringify(map));
 };
 
-export const worker = async () => {
-    try {
-        await workerInner();
-    } catch (e) {
-        logger.error(`Liquidation point mape error: ${e}`);
-    }
-}
+let lastSyncTs = 0
 
 export const main = async () => {
-    await worker();
-
-    setInterval(worker, 300_000); // 5 mins
+    if (lastSyncTs < epoch() - 300) { // 5 mins
+        await worker();
+        lastSyncTs = epoch();
+    }
 }
