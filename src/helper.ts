@@ -34,3 +34,11 @@ export const toTicker = (val: string): PriceTicker => {
 export const getMarket = () => {
   return process.env.USE_STAGING === "1" ? config.markets.MAINNET_STAGING : config.markets.MAINNET
 }
+
+export const toCollateralAddress = (collateralId: string) => {
+  if (collateralId === "sbtc-token") {
+    return "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
+  }
+
+  throw new Error(`Invalid collateral id: ${collateralId}`);
+}

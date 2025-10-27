@@ -6,7 +6,7 @@ import {
     setDebtParamsLocal, setFlashLoanCapacityLocal, setIrParamsLocal, setLpParamsLocal,
     setOnChainPriceFeed
 } from "../../dba/market";
-import { getMarket, toTicker } from "../../helper";
+import { getMarket, toCollateralAddress, toTicker } from "../../helper";
 import { createLogger } from "../../logger";
 import type { CollateralParams, PriceFeedItem, PriceTicker } from "../../types";
 import { epoch } from "../../util";
@@ -45,7 +45,8 @@ const syncMarketState = async () => {
 
     const collateralParams: Record<string, CollateralParams> = {};
     for (const collateral of marketInfo.collaterals) {
-        collateralParams[collateral.id] = {
+        const collateralAddress = toCollateralAddress(collateral.id);
+        collateralParams[collateralAddress] = {
             liquidationLTV: collateral.liquidation_ltv,
             maxLTV: collateral.max_ltv,
             liquidationPremium: collateral.liquidation_premium
