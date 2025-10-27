@@ -60,5 +60,6 @@ export interface LiquidationPosition extends UserInfoBase {
 export interface LiquidationsResponse {
   total: number;
   limit: number;
+  offset: number;
   data: LiquidationPosition[];
 }

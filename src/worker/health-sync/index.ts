@@ -1,11 +1,11 @@
 import assert from "assert";
+import { calcBorrowerStatus } from "../../borrower";
 import { dbCon } from "../../db/con";
 import { clearBorrowerStatuses, getBorrowerCollateralAmount, getBorrowersForHealthCheck, insertBorrowerStatus } from "../../dba/borrower";
 import { getMarketState } from "../../dba/market";
 import { toTicker } from "../../helper";
 import { getPriceFeed } from "../../price-feed";
 import type { PriceTicker } from "../../types";
-import { calcBorrowerStatus } from "./lib";
 
 export const worker = async () => {
   const borrowers = getBorrowersForHealthCheck();
