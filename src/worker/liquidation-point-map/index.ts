@@ -1,5 +1,4 @@
 import assert from "assert";
-import { fetchGetBorrowerPositions } from "../../client/backend";
 import { kvStoreSet } from "../../db/helper";
 import { getMarketState } from "../../dba/market";
 import { getMarket, toTicker } from "../../helper";
@@ -8,37 +7,11 @@ import { getPriceFeed } from "../../price-feed";
 import type { PriceTicker } from "../../types";
 import { epoch } from "../../util";
 import { calcBorrowerStatus } from "../health-sync/lib";
-import { generateDescendingPriceBuckets } from "./lib";
+import { generateDescendingPriceBuckets, getBorrowers } from "./lib";
 
 const logger = createLogger("liquidation-point-map");
 
 type LiquidationPoint = { liquidationPriceUSD: number, liquidatedAmountUSD: number };
-
-const getBorrowers = async () => {
-    const borrowers: {
-        address: string,
-        debtShares: number,
-        collaterals: Record<string, number>
-    }[] = [];
-
-    let limit = 20;
-    let offset = 0;
-    const adresses: string[] = [];
-
-    while (true) {
-        const resp = await fetchGetBorrowerPositions(limit, offset);
-        for (const r of resp.data) {
-            if (adresses.indexOf(r.user) === -1) {
-                borrowers.push({ address: r.user, debtShares: r.debt_shares, collaterals: r.collateral_balances });
-                adresses.push(r.user);
-            }
-        }
-        if (resp.data.length < limit) break;
-        offset += limit;
-    }
-
-    return borrowers;
-}
 
 export const worker = async () => {
     const marketState = getMarketState();

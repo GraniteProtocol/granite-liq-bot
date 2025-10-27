@@ -1,5 +1,6 @@
-import { describe, expect, test } from "bun:test";
-import { generateDescendingPriceBuckets } from "./lib";
+import { describe, expect, mock, test } from "bun:test";
+import type { LiquidationsResponse } from "../../client/backend/types";
+import { generateDescendingPriceBuckets, getBorrowers } from "./lib";
 
 describe("liquidation-point-map lib", () => {
     test("generateDescendingPriceBuckets", () => {
@@ -27,4 +28,80 @@ describe("liquidation-point-map lib", () => {
             9910000000000, 9900000000000, 9890000000000
         ])
     });
+
+    test("getBorrowers", async () => {
+        const positions: LiquidationsResponse = {
+            "total": 3,
+            "limit": 20,
+            "offset": 0,
+            "data": [
+                {
+                    "user": "SP2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX50CQQAWN",
+                    "collateral_balances": {
+                        "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 166792
+                    },
+                    "debt_shares": 76345482,
+                    "lp_shares": 0,
+                    "staked_lp_shares": 0,
+                    "account_health": 102556112,
+                    "liquidable_amount": 0,
+                    "current_debt": 84379941
+                },
+                {
+                    "user": "SP1S2ZTV7QVAYBRJVB85FHXE7P8PZZHXVCERMEHN9",
+                    "collateral_balances": {
+                        "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 33300
+                    },
+                    "debt_shares": 15233602,
+                    "lp_shares": 0,
+                    "staked_lp_shares": 0,
+                    "account_health": 102615099,
+                    "liquidable_amount": 0,
+                    "current_debt": 16836759
+                },
+                {
+                    "user": "SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7",
+                    "collateral_balances": {
+                        "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 89600
+                    },
+                    "debt_shares": 40983403,
+                    "lp_shares": 0,
+                    "staked_lp_shares": 0,
+                    "account_health": 102628896,
+                    "liquidable_amount": 0,
+                    "current_debt": 45296422
+                }
+            ]
+        };
+        const fetchGetBorrowerPositionsMocked = mock(async () => positions);
+        mock.module("../../client/backend", () => ({
+            fetchGetBorrowerPositions: fetchGetBorrowerPositionsMocked
+        }));
+
+        const resp = await getBorrowers();
+
+        expect(resp).toEqual([
+            {
+                address: "SP2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX50CQQAWN",
+                debtShares: 76345482,
+                collaterals: {
+                    "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 166792,
+                },
+            }, {
+                address: "SP1S2ZTV7QVAYBRJVB85FHXE7P8PZZHXVCERMEHN9",
+                debtShares: 15233602,
+                collaterals: {
+                    "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 33300,
+                },
+            }, {
+                address: "SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7",
+                debtShares: 40983403,
+                collaterals: {
+                    "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 89600,
+                },
+            }
+        ]);
+        
+        expect(fetchGetBorrowerPositionsMocked).toBeCalledTimes(1);
+    })
 });
