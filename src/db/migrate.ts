@@ -1,4 +1,3 @@
-import { CONTRACTS } from "../constants";
 import { dbCon } from "./con";
 
 export const createDb = () => {
@@ -66,7 +65,6 @@ export const createDb = () => {
         ");";
 
     CREATE += "INSERT INTO kv_store VALUES ('db_ver', 1);";
-    CREATE += "INSERT INTO kv_store VALUES ('contract_hash', '" + Bun.hash(JSON.stringify(CONTRACTS)).toString() + "');";
 
     dbCon.run(CREATE);
     console.log("db created");

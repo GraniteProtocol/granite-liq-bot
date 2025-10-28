@@ -200,13 +200,6 @@ describe("api e2e", () => {
         const resp = await fetch(`${API_BASE}/config`).then(r => r.json());
         expect(resp).toEqual({
             ALERT_BALANCE: 1,
-            CONTRACTS: {
-                borrower: "SP26NGV9AFZBX7XBDBS2C7EC7FCPSAV9PKREQNMVS.borrower-v1",
-                state: "SP35E2BBMDT2Y1HB0NTK139YBGYV3PAPK3WA8BRNA.state-v1",
-                ir: "SP35E2BBMDT2Y1HB0NTK139YBGYV3PAPK3WA8BRNA.linear-kinked-ir-v1",
-                liquidator: "SP26NGV9AFZBX7XBDBS2C7EC7FCPSAV9PKREQNMVS.liquidator-v1",
-                collaterals: ["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"],
-            },
             CONTRACT_UNLOCK_DELAY: 60,
             DRY_RUN: false,
             ENV: "test",

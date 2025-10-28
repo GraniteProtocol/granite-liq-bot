@@ -1,5 +1,4 @@
-import { CONTRACTS } from "../constants";
-
+import { USE_STAGING } from "../constants";
 import { createLogger } from "../logger";
 import { main as contractSync } from "./contract-sync";
 import { main as liquidate } from "./liquidate";
@@ -31,9 +30,6 @@ const worker = async () => {
 }
 
 export const main = async () => {
-    console.log("--------------------------------");
-    console.log("Worker started with contracts:")
-    console.log(CONTRACTS);
-    console.log("--------------------------------");
+    console.log(`Worker started in "${USE_STAGING ? 'staging' : 'production'}" environment`);
     worker();
 }

@@ -1,19 +1,20 @@
 import { contractPrincipalCV, cvToJSON, fetchCallReadOnlyFunction } from "@stacks/transactions";
 import { bufferFromHex } from "@stacks/transactions/dist/cl";
-import { CONTRACTS } from "../constants";
 import { getMarket } from "../helper";
 import type { InterestRateParams } from "../types";
 import { type AssetInfo } from '../types';
 import { fetchFn, } from "./hiro";
 
 export const getIrParams = async (): Promise<InterestRateParams> => {
-  const [contractAddress, contractName] = CONTRACTS.ir.split(".");
+  const market = getMarket();
+  const { contracts } = market;
+
   return fetchCallReadOnlyFunction({
-    contractAddress,
-    contractName,
+    contractAddress: contracts.INTEREST_RATE.principal,
+    contractName: contracts.INTEREST_RATE.name,
     functionName: "get-ir-params",
     functionArgs: [],
-    senderAddress: contractAddress,
+    senderAddress: contracts.INTEREST_RATE.principal,
     network: 'mainnet',
     client: {
       fetch: fetchFn,
