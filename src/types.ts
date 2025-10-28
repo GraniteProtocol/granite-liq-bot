@@ -64,6 +64,8 @@ export type LiquidationEntity = {
     status: string,
     createdAt: number,
     updatedAt: number | null,
+    fee: number,
+    nonce: number,
 }
 
 export type InterestRateParams = InterestRateParams_;

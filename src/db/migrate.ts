@@ -20,7 +20,7 @@ export const createDb = () => {
         "collateral_asset_balance TEXT NOT NULL DEFAULT '0'," +
         "unprofitability_threshold INTEGER NOT NULL," +
         "flash_loan_sc TEXT NOT NULL," +
-        "usdh_threshold INTEGER NOT NULL," + 
+        "usdh_threshold INTEGER NOT NULL," +
         "lock_tx TEXT," +
         "unlocks_at INTEGER," +
         "created_at INTEGER NOT NULL" +
@@ -62,7 +62,7 @@ export const createDb = () => {
         "contract TEXT NOT NULL," +
         "status TEXT NOT NULL DEFAULT 'pending'," +
         "created_at INTEGER NOT NULL," +
-        "updated_at INTEGER" +      
+        "updated_at INTEGER" +
         ");";
 
     CREATE += "INSERT INTO kv_store VALUES ('db_ver', 1);";
@@ -78,18 +78,10 @@ const updateDbVer = (ver: number) => {
     console.log(`db migrated to ver. ${ver}`);
 }
 
-const migrateToV2 = (): number => {
-    dbCon.run("BEGIN");
-    dbCon.run("CREATE TABLE .....");
+const migrateToV2 = () => {
+    dbCon.run("ALTER TABLE liquidation ADD COLUMN fee INTEGER");
+    dbCon.run("ALTER TABLE liquidation ADD COLUMN nonce INTEGER");
     updateDbVer(2);
-
-    try {
-        dbCon.run("COMMIT");
-        return 2;
-    } catch (e) {
-        dbCon.run("ROLLBACK");
-        throw e;
-    }
 };
 
 export const migrateDb = async () => {
@@ -99,16 +91,19 @@ export const migrateDb = async () => {
     }
 
     const contract_hash = (dbCon.prepare('SELECT "value" FROM kv_store WHERE "key"=?', ['contract_hash']).get() as { value: string }).value;
-    if(Bun.hash(JSON.stringify(CONTRACTS)).toString() !== contract_hash){
+    if (Bun.hash(JSON.stringify(CONTRACTS)).toString() !== contract_hash) {
         throw new Error('Contracts changed. Delete database and sync again.');
     }
-  
 
     let dbVer = Number((dbCon.prepare('SELECT "value" FROM kv_store where "key"=? LIMIT 1', ["db_ver"]).get() as { value: string }).value);
 
-    /*
     if (dbVer < 2) {
-         migrateToV2();
+        migrateToV2();
+    }
+
+    /*
+    if (dbVer < 3) {
+        migrateToV3();
     }
     */
 }

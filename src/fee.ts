@@ -17,4 +17,21 @@ const estimateTxFeeOptimistic = async (): Promise<number> => {
     }
 }
 
-export { estimateTxFeeOptimistic };
+const estimateRbfMultiplier = async (): Promise<number> => {
+    const mempoolSize = (await getMempoolTransactions(1, 'mainnet')).total;
+
+    if (mempoolSize > 300) {
+        return 2.0;
+    } else if (mempoolSize > 200) {
+        return 1.8;
+    } else if (mempoolSize > 100) {
+        return 1.6;
+    } else if (mempoolSize > 50) {
+        return 1.4;
+    } else {
+        return 1.2;
+    }
+}
+
+export { estimateRbfMultiplier, estimateTxFeeOptimistic };
+
