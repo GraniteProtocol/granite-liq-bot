@@ -26,7 +26,6 @@ docker-compose up --build -d
 - `DRY_RUN`: (optional) 1 to block liquidations
 - `MIN_TO_LIQUIDATE`: Minimum usdc amount to run liquidation transactions. Default: 4
 - `TX_TIMEOUT`: Liquidation transaction deadline value. As seconds. Default: 600
-- `BORROWER_SYNC_DELAY`: The delay before updating a borrower data. As seconds. Default: 10
 - `MIN_TO_LIQUIDATE_PER_USER`: Minimum usdc amount to include a position (user) in liquidation batch. Default: 1
 - `SKIP_SWAP_CHECK`: (optional) 1 to skip swap output check. Note that transactions might fail
 - `SLACK_TOKEN`: Slack oauth token for alerts

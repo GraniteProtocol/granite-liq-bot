@@ -31,7 +31,6 @@ export const PRICE_FEED_IDS: { ticker: PriceTicker, feed_id: string }[] = [...ma
 export const MIN_TO_LIQUIDATE = assertNumericEnvVar("MIN_TO_LIQUIDATE", 4);
 export const MIN_TO_LIQUIDATE_PER_USER = assertNumericEnvVar("MIN_TO_LIQUIDATE_PER_USER", 1);
 export const TX_TIMEOUT = assertNumericEnvVar("TX_TIMEOUT", 600);
-export const BORROWER_SYNC_DELAY = assertNumericEnvVar("BORROWER_SYNC_DELAY", 5);
 export const CONTRACT_UNLOCK_DELAY = assertNumericEnvVar("CONTRACT_UNLOCK_DELAY", 10);
 export const DRY_RUN = process.env.DRY_RUN === "1";
 export const SKIP_SWAP_CHECK = process.env.SKIP_SWAP_CHECK === "1";

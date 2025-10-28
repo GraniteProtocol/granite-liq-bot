@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { dbCon } from "../db/con";
 import {
     getAccrueInterestParamsLocal,
@@ -12,12 +12,6 @@ import {
     setIrParamsLocal, setLpParamsLocal,
     setOnChainPriceFeed
 } from "./market";
-
-mock.module("../constants", () => {
-    return {
-        BORROWER_SYNC_DELAY: 10
-    };
-});
 
 describe("dba market", () => {
     test("IrParamsLocal", () => {

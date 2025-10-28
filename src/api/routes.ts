@@ -2,14 +2,16 @@ import {
     getAddressFromPrivateKey
 } from "@stacks/transactions";
 import { generateWallet } from "@stacks/wallet-sdk";
+import { getBorrowersToLiquidate } from "../borrower";
 import { getContractInfo } from "../client/hiro";
 import { getAssetInfo, getLiquidatorContractInfo } from "../client/read-only-call";
 import * as constants from "../constants";
 import { kvStoreGet } from "../db/helper";
-import { getBorrowerStatusList } from "../dba/borrower";
 import { getContractList, insertContract } from "../dba/contract";
 import { getLiquidationList } from "../dba/liquidation";
+import { getMarketState } from "../dba/market";
 import type { Filter } from "../dba/sql";
+import { getPriceFeed } from "../price-feed";
 import { parseUnits } from "../units";
 
 export const errorResponse = (error: any) => {
@@ -107,10 +109,9 @@ export const routes = {
 
     },
     getBorrowers: async (_: Request) => {
-        const borrowers = getBorrowerStatusList({
-            filters: [['debt', '>', 0]],
-            orderBy: 'total_repay_amount DESC, risk DESC'
-        });
+        const marketState = getMarketState();
+        const priceFeed = await getPriceFeed(["btc"], marketState);
+        const borrowers = await getBorrowersToLiquidate(marketState, priceFeed);
 
         return Response.json(borrowers);
     },

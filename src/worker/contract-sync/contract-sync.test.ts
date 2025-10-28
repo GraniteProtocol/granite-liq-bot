@@ -40,11 +40,6 @@ describe("handleContractLocks", () => {
             finalizeLiquidation: finalizeLiquidationMocked,
         }));
 
-        const getLiquidatedPrincipalsMocked = mock(() => { });
-        mock.module("./lib", () => ({
-            getLiquidatedPrincipals: getLiquidatedPrincipalsMocked
-        }));
-
         const onLiqTxEndMocked = mock(() => { });
         mock.module("../../hooks", () => ({
             onLiqTxEnd: onLiqTxEndMocked
@@ -83,11 +78,6 @@ describe("handleContractLocks", () => {
         const finalizeLiquidationMocked = mock(() => { });
         mock.module("../../dba/liquidation", () => ({
             finalizeLiquidation: finalizeLiquidationMocked,
-        }));
-
-        const getLiquidatedPrincipalsMocked = mock(() => { });
-        mock.module("./lib", () => ({
-            getLiquidatedPrincipals: getLiquidatedPrincipalsMocked
         }));
 
         const onLiqTxEndMocked = mock(() => { });
@@ -129,11 +119,6 @@ describe("handleContractLocks", () => {
         const finalizeLiquidationMocked = mock(() => { });
         mock.module("../../dba/liquidation", () => ({
             finalizeLiquidation: finalizeLiquidationMocked,
-        }));
-
-        const getLiquidatedPrincipalsMocked = mock(() => { });
-        mock.module("./lib", () => ({
-            getLiquidatedPrincipals: getLiquidatedPrincipalsMocked
         }));
 
         const onLiqTxEndMocked = mock(() => { });
@@ -178,11 +163,6 @@ describe("handleContractLocks", () => {
             finalizeLiquidation: finalizeLiquidationMocked,
         }));
 
-        const getLiquidatedPrincipalsMocked = mock(() => ['SP0000']);
-        mock.module("./lib", () => ({
-            getLiquidatedPrincipals: getLiquidatedPrincipalsMocked
-        }));
-
         const onLiqTxEndMocked = mock(() => { });
         mock.module("../../hooks", () => ({
             onLiqTxEnd: onLiqTxEndMocked
@@ -201,7 +181,6 @@ describe("handleContractLocks", () => {
         expect(unlockContractMocked).toHaveBeenCalledTimes(0);
         expect(unlockContractScheduleMocked).toHaveBeenCalledTimes(1);
         expect(finalizeLiquidationMocked).toHaveBeenCalledTimes(1);
-        expect(getLiquidatedPrincipalsMocked).toHaveBeenCalledTimes(1);
         expect(onLiqTxEndMocked).toHaveBeenCalledTimes(1);
         expect(loggerMocked).toHaveBeenCalledTimes(1);
         expect(loggerMocked.mock.calls[0]).toEqual(["transaction 0x00 completed as success. contract SP...contract will be unlocked in 60 seconds"] as any);
@@ -225,11 +204,6 @@ describe("handleContractLocks", () => {
             finalizeLiquidation: finalizeLiquidationMocked,
         }));
 
-        const getLiquidatedPrincipalsMocked = mock(() => ['SP0000']);
-        mock.module("./lib", () => ({
-            getLiquidatedPrincipals: getLiquidatedPrincipalsMocked
-        }));
-
         const onLiqTxEndMocked = mock(() => { });
         mock.module("../../hooks", () => ({
             onLiqTxEnd: onLiqTxEndMocked
@@ -248,7 +222,6 @@ describe("handleContractLocks", () => {
         expect(unlockContractMocked).toHaveBeenCalledTimes(1);
         expect(unlockContractScheduleMocked).toHaveBeenCalledTimes(0);
         expect(finalizeLiquidationMocked).toHaveBeenCalledTimes(0);
-        expect(getLiquidatedPrincipalsMocked).toHaveBeenCalledTimes(0);
         expect(onLiqTxEndMocked).toHaveBeenCalledTimes(0);
         expect(loggerMocked).toHaveBeenCalledTimes(1);
         expect(loggerMocked.mock.calls[0]).toEqual(["contract SP...contract unlocked"] as any);

@@ -140,7 +140,6 @@ Returns: [Config](#Config)
 ```ts
 {
   ALERT_BALANCE: number,
-  BORROWER_SYNC_DELAY: number,
   CONTRACTS: {
     borrower: string,
     state: string,

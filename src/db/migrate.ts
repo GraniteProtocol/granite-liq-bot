@@ -84,15 +84,18 @@ const migrateToV2 = () => {
     updateDbVer(2);
 };
 
+const migrateToV3 = () => {
+    dbCon.run("DROP TABLE borrower");
+    dbCon.run("DROP TABLE borrower_position");
+    dbCon.run("DROP TABLE borrower_collaterals");
+    dbCon.run("DROP TABLE borrower_status");
+    updateDbVer(3);
+};
+
 export const migrateDb = async () => {
     const exists = !!dbCon.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?", ['kv_store']).get();
     if (!exists) {
         createDb();
-    }
-
-    const contract_hash = (dbCon.prepare('SELECT "value" FROM kv_store WHERE "key"=?', ['contract_hash']).get() as { value: string }).value;
-    if (Bun.hash(JSON.stringify(CONTRACTS)).toString() !== contract_hash) {
-        throw new Error('Contracts changed. Delete database and sync again.');
     }
 
     let dbVer = Number((dbCon.prepare('SELECT "value" FROM kv_store where "key"=? LIMIT 1', ["db_ver"]).get() as { value: string }).value);
@@ -101,9 +104,13 @@ export const migrateDb = async () => {
         migrateToV2();
     }
 
-    /*
     if (dbVer < 3) {
         migrateToV3();
+    }
+
+    /*
+    if (dbVer < 4) {
+        migrateToV4();
     }
     */
 }

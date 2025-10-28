@@ -14,44 +14,12 @@ const prepareTestDb = () => {
 
     dbCon.run('DELETE FROM kv_store');
     dbCon.run('DELETE FROM contract');
-    dbCon.run('DELETE FROM borrower');
-    dbCon.run('DELETE FROM borrower_position');
-    dbCon.run('DELETE FROM borrower_collaterals');
-    dbCon.run('DELETE FROM borrower_status');
     dbCon.run('DELETE FROM liquidation');
-
-    `
-        SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7|0|0
-        SP1GJSC4GG3MDA1KYZJYS9FEVCKHASR1N7089BEQK|0|0
-        SP1RG3YP9C8SC82GVHT1E1WG22MYHTCJ4FT3T9R4G|0|0
-        SP3666C2NYH5HVDZ8X323EQ327D6WNCZEVX4G3QCZ|0|0
-        SP2N7SK0W83NJSZHFH8HH31ZT3DXJG7NFE5VYT9SJ|0|0
-        SP2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX50CQQAWN|0|0
-        `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
-        dbCon.run(insert(r, 'borrower'));
-    });
-
-    `
-        SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7|0.2783|1.6167|11.9128|42.7993|0.6185|{}|0.0
-        SP1RG3YP9C8SC82GVHT1E1WG22MYHTCJ4FT3T9R4G|0.4487|1.0029|15.678|34.9399|0.9971|{}|0.0
-        SP2N7SK0W83NJSZHFH8HH31ZT3DXJG7NFE5VYT9SJ|0.4467|1.0074|6.9424|15.541|0.9927|{}|0.0
-        `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
-        dbCon.run(insert(r, 'borrower_status'));
-    });
 
     `
         53bdce5437e1346b44eda525c8d4c98c7faf09abe37b8b85ee40778e9eed36c4|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.liquidator|success|1743168820|1743168837|20000|1
         `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
         dbCon.run(insert(r, 'liquidation'));
-    });
-
-    `
-        SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7|SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token|50100.0
-        SP3666C2NYH5HVDZ8X323EQ327D6WNCZEVX4G3QCZ|SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token|20200.0
-        SP1RG3YP9C8SC82GVHT1E1WG22MYHTCJ4FT3T9R4G|SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token|40900.0
-        SP2N7SK0W83NJSZHFH8HH31ZT3DXJG7NFE5VYT9SJ|SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token|18192.0
-        `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
-        dbCon.run(insert(r, 'borrower_collaterals'));
     });
 
     `
@@ -61,28 +29,14 @@ const prepareTestDb = () => {
     });
 
     `
-        SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7|8706247.0|["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"]
-        SP1GJSC4GG3MDA1KYZJYS9FEVCKHASR1N7089BEQK|0.0|[]
-        SP3666C2NYH5HVDZ8X323EQ327D6WNCZEVX4G3QCZ|0.0|["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"]
-        SP2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX50CQQAWN|0.0|[]
-        SP1RG3YP9C8SC82GVHT1E1WG22MYHTCJ4FT3T9R4G|11457996.0|["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"]
-        SP2N7SK0W83NJSZHFH8HH31ZT3DXJG7NFE5VYT9SJ|5073723.0|["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token"]
-        `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
-        dbCon.run(insert(r, 'borrower_position'));
-    });
-
-    `
         db_ver|1
-        contract_hash|15264183702619828235
-        borrower-sync-last-tx-seen-SP1M6MHD4EJ70MPJSH1C0PXSHCQ3D9C881AB7CVAZ.borrower-v1|0x4f448430b516abb89b2aaada632f0792c48ed20319b8db68a25ba3cfb6fd3332
-        borrower-sync-last-tx-seen-SP1M6MHD4EJ70MPJSH1C0PXSHCQ3D9C881AB7CVAZ.state-v1|0xe1ba5faed33581769533a656ca6b0cf562da691d4d45523072e6ba697e5d1e96
-        borrower-sync-last-tx-seen-SP36P9SC1CKW9YN2DM0FC78Q6060BRGDWPQM96HR1.liquidator-v1|0x444e6b900061a14347b8dce48b191726f18f7f4ba9afada40f97bc3780da4c5c
         ir-params|{"baseIR":3000000000000,"slope1":50000000000,"slope2":750000000000,"urKink":800000000000}
         lp-params|{"totalAssets":109878238,"totalShares":99841424}
         accrue-interest-params|{"lastAccruedBlockTime":1743168818}
         debt-params|{"openInterest":34532335,"totalDebtShares":25237966}
         collateral-params|{"SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token":{"liquidationLTV":45000001,"maxLTV":45000000,"liquidationPremium":10000000}}
-        last-sync|1743169049661
+        flash-loan-capacity|{ "ST20M5GABDT6WYJHXBT5CDH4501V1Q65242SPRMXH.mock-usdc": 0 }
+        on-chain-price-feed|{ "btc": { "price": "11470000751501", "expo": -8, "publish_time": 1754045925 }}
         `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
         dbCon.run(insert(r, 'kv_store'));
     });
@@ -126,7 +80,6 @@ mock.module("../client/read-only-call", () => {
         }
     }
 });
-
 
 describe("api e2e", () => {
     test("start api", async () => {
@@ -203,41 +156,6 @@ describe("api e2e", () => {
         ]);
     })
 
-    test("/borrowers", async () => {
-        const resp = await fetch(`${API_BASE}/borrowers`).then(r => r.json());
-
-        expect(resp).toEqual([
-            {
-                address: "SP1RG3YP9C8SC82GVHT1E1WG22MYHTCJ4FT3T9R4G",
-                ltv: 0.4487,
-                health: 1.0029,
-                debt: 15.678,
-                collateral: 34.9399,
-                risk: 0.9971,
-                maxRepay: {},
-                totalRepayAmount: 0,
-            }, {
-                address: "SP2N7SK0W83NJSZHFH8HH31ZT3DXJG7NFE5VYT9SJ",
-                ltv: 0.4467,
-                health: 1.0074,
-                debt: 6.9424,
-                collateral: 15.541,
-                risk: 0.9927,
-                maxRepay: {},
-                totalRepayAmount: 0,
-            }, {
-                address: "SP3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBPEKAEK7",
-                ltv: 0.2783,
-                health: 1.6167,
-                debt: 11.9128,
-                collateral: 42.7993,
-                risk: 0.6185,
-                maxRepay: {},
-                totalRepayAmount: 0,
-            }
-        ]);
-    })
-
     test("/liquidations", async () => {
         const resp = await fetch(`${API_BASE}/liquidations`).then(r => r.json());
 
@@ -280,7 +198,6 @@ describe("api e2e", () => {
         const resp = await fetch(`${API_BASE}/config`).then(r => r.json());
         expect(resp).toEqual({
             ALERT_BALANCE: 1,
-            BORROWER_SYNC_DELAY: 10,
             CONTRACTS: {
                 borrower: "SP26NGV9AFZBX7XBDBS2C7EC7FCPSAV9PKREQNMVS.borrower-v1",
                 state: "SP35E2BBMDT2Y1HB0NTK139YBGYV3PAPK3WA8BRNA.state-v1",
