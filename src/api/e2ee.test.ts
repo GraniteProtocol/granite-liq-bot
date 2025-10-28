@@ -48,40 +48,42 @@ const MNEMONIC = randomSeedPhrase();
 const wallet = await generateWallet({ secretKey: MNEMONIC, password: "", });
 const ADDRESS = getAddressFromPrivateKey(wallet.accounts[0].stxPrivateKey, 'mainnet');
 
-mock.module("../client/hiro", () => {
-    return {
-        getContractInfo: () => {
-            return {
-
-            }
-        }
-    }
-});
-
-mock.module("../client/read-only-call", () => {
-    return {
-        getLiquidatorContractInfo: () => {
-            return {
-                operator: ADDRESS,
-                marketAsset: '',
-                collateralAsset: '',
-                unprofitabilityThreshold: 0,
-                flashLoanSc: "SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.flash-loan-v1",
-                usdhThreshold: 9997
-            }
-        },
-        getAssetInfo: () => {
-            return {
-                address: 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token',
-                name: 'sBTC',
-                symbol: 'sBTC',
-                decimals: 8
-            }
-        }
-    }
-});
 
 describe("api e2e", () => {
+
+    mock.module("../client/hiro", () => {
+        return {
+            getContractInfo: () => {
+                return {
+
+                }
+            }
+        }
+    });
+
+    mock.module("../client/read-only-call", () => {
+        return {
+            getLiquidatorContractInfo: () => {
+                return {
+                    operator: ADDRESS,
+                    marketAsset: '',
+                    collateralAsset: '',
+                    unprofitabilityThreshold: 0,
+                    flashLoanSc: "SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.flash-loan-v1",
+                    usdhThreshold: 9997
+                }
+            },
+            getAssetInfo: () => {
+                return {
+                    address: 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token',
+                    name: 'sBTC',
+                    symbol: 'sBTC',
+                    decimals: 8
+                }
+            }
+        }
+    });
+
     test("start api", async () => {
         await apiMain();
     });
