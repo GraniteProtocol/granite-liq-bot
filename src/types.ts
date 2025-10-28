@@ -21,6 +21,8 @@ export type BorrowerStatus = {
     totalRepayAmount: number
 }
 
+export type BorrowerStatusEntity = BorrowerStatus & { address: string }
+
 export type ContractEntity = {
     id: string,
     address: string,
@@ -38,25 +40,6 @@ export type ContractEntity = {
     lockTx: string | null
     unlocksAt: number | null,
 }
-
-export type BorrowerEntity = {
-    address: string,
-    syncTs: number
-}
-
-export type BorrowerPositionEntity = {
-    address: string,
-    debtShares: number,
-    collaterals: string[]
-}
-
-export type BorrowerCollateralEntity = {
-    address: string,
-    collateral: string,
-    amount: number
-}
-
-export type BorrowerStatusEntity = BorrowerStatus & { address: string }
 
 export type LiquidationEntity = {
     txid: string,
