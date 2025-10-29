@@ -37,6 +37,6 @@ export async function fetchAndProcessPriceFeed(): Promise<PriceFeedResponse> {
     logger.error(
       `Pyth HTTP call failed at attempt ${attempt}: ${err instanceof Error ? err.message : String(err)}`
     );
-    await new Promise(res => setTimeout(res, 1000));
+    await new Promise(res => setTimeout(res, 200));
   });
 }
