@@ -2,7 +2,6 @@ import { getAddressFromPrivateKey } from "@stacks/transactions";
 import { generateWallet, randomSeedPhrase } from "@stacks/wallet-sdk";
 import { describe, expect, mock, setSystemTime, test } from "bun:test";
 import { dbCon } from "../db/con";
-import { kvStoreSet } from "../db/helper";
 import { main as apiMain } from "./index";
 
 const API_BASE = `http://localhost:${process.env.API_PORT}`;
@@ -92,19 +91,10 @@ describe("api e2e", () => {
         prepareTestDb();
     })
 
-    test("/health (not healthy - last sync)", async () => {
-        kvStoreSet("last-sync", Date.now() - 121_000);
-        const resp = await fetch(`${API_BASE}/health`).then(r => r.json());
-        expect(resp.lastSync).toEqual("2025-04-01T13:55:04.000Z");
-        expect(resp.isHealthy).toEqual(false);
-    })
-
     test("/health", async () => {
-        kvStoreSet("last-sync", Date.now() - 1000);
         const resp = await fetch(`${API_BASE}/health`).then(r => r.json());
         expect(resp).toEqual({
             now: "2025-04-01T13:57:05.000Z",
-            lastSync: "2025-04-01T13:57:04.000Z",
             lastLiquidation: {
                 txid: "53bdce5437e1346b44eda525c8d4c98c7faf09abe37b8b85ee40778e9eed36c4",
                 contract: "SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.liquidator",
