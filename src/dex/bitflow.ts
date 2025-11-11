@@ -1,7 +1,6 @@
 
 import { contractPrincipalCV, cvToJSON, fetchCallReadOnlyFunction, uintCV } from "@stacks/transactions";
 import { fetchFn, } from "../client/hiro";
-import { GRANITE_RPC } from "../constants";
 import { formatUnits, parseUnits } from "../units";
 
 export const estimateSbtcToAeusdc = async (sBtcAmount: number) => {
@@ -58,7 +57,6 @@ export const estimateUsdhToToAeusdc = async(usdhAmount: number) => {
         senderAddress: 'SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR',
         network: 'mainnet',
         client: {
-            baseUrl: GRANITE_RPC,
             fetch: fetchFn,
         }
     }).then(r => Number(cvToJSON(r).value.value));

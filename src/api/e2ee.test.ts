@@ -203,7 +203,6 @@ describe("api e2e", () => {
             CONTRACT_UNLOCK_DELAY: 60,
             DRY_RUN: false,
             ENV: "test",
-            GRANITE_RPC: "https://my.rpc.com",
             HAS_HIRO_API_KEY: true,
             IR_PARAMS_SCALING_FACTOR: 12,
             LIQUIDATON_CAP: 500000,
