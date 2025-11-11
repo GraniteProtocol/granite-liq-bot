@@ -116,7 +116,6 @@ export const routes = {
         return Response.json(borrowers);
     },
     health: async () => {
-        const lastSync = kvStoreGet("last-sync");
         const now = Date.now();
 
         let operatorBalance: number | null = null;
@@ -129,12 +128,10 @@ export const routes = {
 
         const lastLiquidation = getLiquidationList({ limit: 1 })[0] || null;
 
-        const isHealthy = lastSync && Number(lastSync) > now - 120_000 && // Healthy if last sync was less than 120 seconds ago
-            (operatorBalance === null || operatorBalance >= parseUnits(constants.ALERT_BALANCE, 6)) // Operator balance can be null if there is no contract. Otherwise it should be bigger than ALERT_BALANCE
+        const isHealthy = (operatorBalance === null || operatorBalance >= parseUnits(constants.ALERT_BALANCE, 6)) // Operator balance can be null if there is no contract. Otherwise it should be bigger than ALERT_BALANCE
 
         return Response.json({
             now: new Date(now).toISOString(),
-            lastSync: lastSync ? new Date(Number(lastSync)).toISOString() : null,
             lastLiquidation,
             balances: {
                 operatorBalance,

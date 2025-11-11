@@ -116,7 +116,6 @@ Returns: [Config](#Config)
 ```ts
 {
     now: string, // current server date (ISO)
-    lastSync: string | null, // null if the first worker cycle haven't completed yet otherwise last sync date (ISO)
     lastLiquidation: LiquidationEntity | null,
     balances: {
         operatorBalance: number | null,
