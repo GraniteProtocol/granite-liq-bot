@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { RBF_THRESHOLD } from "../../constants";
 import type { BorrowerStatusEntity, ContractEntity, MarketState, PriceFeedResponseMixed } from "../../types";
 import { epoch } from "../../util";
@@ -90,15 +90,8 @@ describe("liquidateWorker", () => {
         })
     }));
 
-    const originalEnv = { ...process.env };
-
     beforeEach(() => {
         mock.restore();
-        process.env = { ...originalEnv };
-    });
-
-    afterEach(() => {
-        process.env = { ...originalEnv };
     });
 
     test("no contract, skip", async () => {
