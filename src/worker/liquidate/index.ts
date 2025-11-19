@@ -2,14 +2,14 @@ import { broadcastTransaction, makeContractCall } from "@stacks/transactions";
 import assert from "node:assert";
 import { getBorrowersToLiquidate } from "../../borrower";
 import { fetchFn, getAccountNonces } from "../../client/hiro";
-import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, RBF_THRESHOLD, SKIP_SWAP_CHECK, USE_FLASH_LOAN, USE_USDH } from "../../constants";
+import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, RBF_THRESHOLD, SKIP_SWAP_CHECK, SWAP_THRESHOLD, USE_FLASH_LOAN, USE_USDH } from "../../constants";
 import { getContractList, getContractOperatorPriv, lockContract } from "../../dba/contract";
 import { finalizeLiquidation, getLiquidationByTxId, insertLiquidation } from "../../dba/liquidation";
 import { getMarketState } from "../../dba/market";
 import { estimateSbtcToAeusdc, getDexNameById } from "../../dex";
 import { estimateRbfMultiplier, estimateTxFeeOptimistic } from "../../fee";
 import { toTicker } from "../../helper";
-import { onLiqSwapOutError, onLiqTx, onLiqTxError } from "../../hooks";
+import { onLiqSwapOutError, onLiqTx, onLiqTxError, onLiqTxSwap } from "../../hooks";
 import { createLogger } from "../../logger";
 import { getPriceFeed } from "../../price-feed";
 import { formatUnits } from "../../units";
@@ -85,18 +85,26 @@ export const liquidateWorker = async () => {
         return;
     }
 
-    // Swap check
-    const minExpected = formatUnits(calcMinOut(spendBn, contract.unprofitabilityThreshold), marketAsset.decimals);
-    const usdhContext = USE_USDH ? { btcPriceBn: BigInt(cFeed.price), minterContract: contract.id } : undefined;
-    const swap = await estimateSbtcToAeusdc(receive, usdhContext);
-    const dex = getDexNameById(swap.dex);
+    let minExpected;
+    let swap;
+    let dex;
+    
+    // no swap if liquidation amount is under SWAP_THRESHOLD and the contract has enough market balance and no usdh mode
+    const noSwap = spend < SWAP_THRESHOLD && contract.marketAsset && contract.marketAsset.balance >= spendBn && !USE_USDH;
+    if (!noSwap) {
+        // Swap check
+        minExpected = formatUnits(calcMinOut(spendBn, contract.unprofitabilityThreshold), marketAsset.decimals);
+        const usdhContext = USE_USDH ? { btcPriceBn: BigInt(cFeed.price), minterContract: contract.id } : undefined;
+        swap = await estimateSbtcToAeusdc(receive, usdhContext);
+        dex = getDexNameById(swap.dex);
 
-    if (swap.dy < minExpected) {
-        logger.error(`Swap out is lower than min expected. spend: ${spend} usd, receive: ${receive} btc, min expected: ${minExpected} usd, dex: ${dex}, swap out: ${swap.dy} usd`);
-        await onLiqSwapOutError(spend, receive, minExpected, dex, swap.dy);
+        if (swap.dy < minExpected) {
+            logger.error(`Swap out is lower than min expected. spend: ${spend} usd, receive: ${receive} btc, min expected: ${minExpected} usd, dex: ${dex}, swap out: ${swap.dy} usd`);
+            await onLiqSwapOutError(spend, receive, minExpected, dex, swap.dy);
 
-        if (!SKIP_SWAP_CHECK) {
-            return;
+            if (!SKIP_SWAP_CHECK) {
+                return;
+            }
         }
     }
 
@@ -104,8 +112,8 @@ export const liquidateWorker = async () => {
         logger.info('Dry run mode on, skipping.', {
             spend: `${spend} usd`,
             receive: `${receive} btc`,
-            minExpected: `${minExpected} usd`,
-            dy: `${swap.dy} usd`,
+            minExpected: minExpected ? `${minExpected} usd` : '--',
+            dy: swap ? `${swap.dy} usd` : '--',
             dex,
             batch,
         });
@@ -152,12 +160,17 @@ export const liquidateWorker = async () => {
             collateralPrice: `${collateralPriceFormatted} usd (${collateralPrice})`,
             spend: `${spend} usd`,
             receive: `${receive} btc`,
-            minExpected: `${minExpected} usd`,
-            dy: `${swap.dy} usd`,
+            minExpected: minExpected ? `${minExpected} usd` : '--',
+            dy: swap ? `${swap.dy} usd` : '--',
             dex,
             batch,
         });
-        await onLiqTx(tx.txid, spend, receive, minExpected, dex, collateralPriceFormatted, batch);
+
+        if (minExpected && dex) {
+            await onLiqTxSwap(tx.txid, spend, receive, minExpected, dex, collateralPriceFormatted, batch);
+        } else {
+            await onLiqTx(tx.txid, spend, receive, collateralPriceFormatted, batch)
+        }
         return;
     }
 }

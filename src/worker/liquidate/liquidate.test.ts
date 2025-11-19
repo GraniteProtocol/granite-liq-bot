@@ -210,7 +210,6 @@ describe("liquidateWorker", () => {
         expect(calcMinOutMocked).toHaveBeenCalledTimes(0);
     });
 
-
     test("liquidable position, swap out error", async () => {
         const getContractListMocked = mock(() => [contract]);
         mock.module("../../dba/contract", () => ({
@@ -284,7 +283,6 @@ describe("liquidateWorker", () => {
         expect(onLiqSwapOutErrorMocked).toHaveBeenCalledTimes(1);
         expect(getContractOperatorPrivMocked).toHaveBeenCalledTimes(0);
     });
-
 
     test("liquidable position, broadcast error", async () => {
         const getContractListMocked = mock(() => [contract]);
@@ -485,7 +483,7 @@ describe("liquidateWorker", () => {
         const onLiqTxMocked = mock(() => { });
         mock.module("../../hooks", () => ({
             onLiqTxError: onLiqTxErrorMocked,
-            onLiqTx: onLiqTxMocked
+            onLiqTxSwap: onLiqTxMocked
         }));
 
         const lockContractMocked = mock(() => { });
@@ -514,7 +512,6 @@ describe("liquidateWorker", () => {
         expect(insertLiquidationMocked).toHaveBeenCalledTimes(1);
         expect(onLiqTxMocked).toHaveBeenCalledTimes(1);
     });
-
 
     test("liquidable position, do rbf", async () => {
         const getContractListMocked = mock(() => [{ ...contract, lockTx: '0x00' }]);
@@ -617,7 +614,7 @@ describe("liquidateWorker", () => {
         const onLiqTxMocked = mock(() => { });
         mock.module("../../hooks", () => ({
             onLiqTxError: onLiqTxErrorMocked,
-            onLiqTx: onLiqTxMocked
+            onLiqTxSwap: onLiqTxMocked
         }));
 
         const lockContractMocked = mock(() => { });

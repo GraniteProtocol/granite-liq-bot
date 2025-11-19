@@ -30,3 +30,4 @@ export const PRICE_FEED_FRESHNESS_BUFFER = 60; // 60 secs
 export const LIQUIDATON_POS_COUNT_MIN = assertNumericEnvVar("LIQUIDATON_POS_COUNT_MIN", 10);
 export const LIQUIDATON_POS_COUNT_MAX = assertNumericEnvVar("LIQUIDATON_POS_COUNT_MAX", 20); 
 export const RBF_THRESHOLD = 15; // seconds
+export const SWAP_THRESHOLD = assertNumericEnvVar("SWAP_THRESHOLD", 0);
