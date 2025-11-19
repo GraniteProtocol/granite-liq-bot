@@ -16,7 +16,8 @@ import { formatUnits } from "../../units";
 import { epoch } from "../../util";
 import { calcMinOut, limitBorrowers, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions } from "./lib";
 
-export const liquidateWorker = async () => {
+export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUIDATON_CAP, minToLiquidate = MIN_TO_LIQUIDATE, rbfThreshold = RBF_THRESHOLD, skipSwapCheck = SKIP_SWAP_CHECK, swapThreshold = SWAP_THRESHOLD, useFlashLoan = USE_FLASH_LOAN, useUsdh = USE_USDH }:
+    { dryRun?: boolean, liqudationCap?: number, minToLiquidate?: number, rbfThreshold?: number, skipSwapCheck?: boolean, swapThreshold?: number, useFlashLoan?: boolean, useUsdh?: boolean }) => {
     const logger = createLogger("liquidate");
 
     const contract = (getContractList({
@@ -33,7 +34,7 @@ export const liquidateWorker = async () => {
     if (contract.lockTx) {
         const liquidation = getLiquidationByTxId(contract.lockTx);
         assert(liquidation, "can't find liquidation");
-        if (epoch() - liquidation.createdAt >= RBF_THRESHOLD) {
+        if (epoch() - liquidation.createdAt >= rbfThreshold) {
             rbfInfo = { txid: contract.lockTx, nonce: liquidation.nonce, fee: liquidation.fee };
             logger.info("Doing RBF");
         } else {
@@ -62,7 +63,7 @@ export const liquidateWorker = async () => {
     const cFeed = priceFeed.items[collateralTicker]!;
     const collateralPrice = Number(cFeed.price);
     const collateralPriceFormatted = formatUnits(collateralPrice, Math.abs(cFeed.expo)).toFixed(2);
-    const flashLoanCapacityBn = USE_FLASH_LOAN ? (marketState.flashLoanCapacity[marketAsset.address] || 0) : 0;
+    const flashLoanCapacityBn = useFlashLoan ? (marketState.flashLoanCapacity[marketAsset.address] || 0) : 0;
 
     const batchInfo = makeLiquidationBatch({
         marketAsset,
@@ -71,7 +72,7 @@ export const liquidateWorker = async () => {
         borrowers: limitBorrowers(borrowers, priceFeed),
         collateralPrice,
         liquidationPremium,
-        liquidationCap: makeLiquidationCap(LIQUIDATON_CAP, USE_USDH)
+        liquidationCap: makeLiquidationCap(liqudationCap, useUsdh)
     });
     const { batch, spendBn, spend, receive } = batchInfo;
 
@@ -80,7 +81,7 @@ export const liquidateWorker = async () => {
         return;
     }
 
-    if (spend < MIN_TO_LIQUIDATE) {
+    if (spend < minToLiquidate) {
         // logger.info(`Too small to liquidate. spend: ${spend}, receive: ${receive}`);
         return;
     }
@@ -88,13 +89,13 @@ export const liquidateWorker = async () => {
     let minExpected;
     let swap;
     let dex;
-    
-    // no swap if liquidation amount is under SWAP_THRESHOLD and the contract has enough market balance and no usdh mode
-    const noSwap = spend < SWAP_THRESHOLD && contract.marketAsset && contract.marketAsset.balance >= spendBn && !USE_USDH;
+
+    // no swap if liquidation amount is under swapThreshold and the contract has enough market balance and no usdh mode
+    const noSwap = spend < swapThreshold && contract.marketAsset && contract.marketAsset.balance >= spendBn && !useUsdh;
     if (!noSwap) {
         // Swap check
         minExpected = formatUnits(calcMinOut(spendBn, contract.unprofitabilityThreshold), marketAsset.decimals);
-        const usdhContext = USE_USDH ? { btcPriceBn: BigInt(cFeed.price), minterContract: contract.id } : undefined;
+        const usdhContext = useUsdh ? { btcPriceBn: BigInt(cFeed.price), minterContract: contract.id } : undefined;
         swap = await estimateSbtcToAeusdc(receive, usdhContext);
         dex = getDexNameById(swap.dex);
 
@@ -102,13 +103,13 @@ export const liquidateWorker = async () => {
             logger.error(`Swap out is lower than min expected. spend: ${spend} usd, receive: ${receive} btc, min expected: ${minExpected} usd, dex: ${dex}, swap out: ${swap.dy} usd`);
             await onLiqSwapOutError(spend, receive, minExpected, dex, swap.dy);
 
-            if (!SKIP_SWAP_CHECK) {
+            if (!skipSwapCheck) {
                 return;
             }
         }
     }
 
-    if (DRY_RUN) {
+    if (dryRun) {
         logger.info('Dry run mode on, skipping.', {
             spend: `${spend} usd`,
             receive: `${receive} btc`,
@@ -132,8 +133,8 @@ export const liquidateWorker = async () => {
         batchInfo,
         priceFeed,
         swap,
-        useFlashLoan: USE_FLASH_LOAN,
-        useUsdh: USE_USDH,
+        useFlashLoan: useFlashLoan,
+        useUsdh: useUsdh,
     })
 
     const call = await makeContractCall({ ...txOptions, network: 'mainnet', client: { fetch: fetchFn } });
@@ -176,5 +177,5 @@ export const liquidateWorker = async () => {
 }
 
 export const main = async () => {
-    await liquidateWorker();
+    await liquidateWorker({});
 }

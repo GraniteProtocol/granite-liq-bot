@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { RBF_THRESHOLD } from "../../constants";
 import type { BorrowerStatusEntity, ContractEntity, MarketState, PriceFeedResponseMixed } from "../../types";
 import { epoch } from "../../util";
@@ -90,8 +90,15 @@ describe("liquidateWorker", () => {
         })
     }));
 
+    const originalEnv = { ...process.env };
+
     beforeEach(() => {
         mock.restore();
+        process.env = { ...originalEnv };
+    });
+
+    afterEach(() => {
+        process.env = { ...originalEnv };
     });
 
     test("no contract, skip", async () => {
@@ -105,7 +112,7 @@ describe("liquidateWorker", () => {
             getMarketState: getMarketStateMocked,
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getMarketStateMocked).toHaveBeenCalledTimes(0);
@@ -135,7 +142,7 @@ describe("liquidateWorker", () => {
             getLiquidationByTxId: getLiquidationByTxIdMocked,
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(1);
@@ -200,7 +207,7 @@ describe("liquidateWorker", () => {
             calcMinOut: calcMinOutMocked
         }))
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
@@ -271,7 +278,7 @@ describe("liquidateWorker", () => {
             getContractOperatorPriv: getContractOperatorPrivMocked
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
@@ -375,7 +382,7 @@ describe("liquidateWorker", () => {
             lockContract: lockContractMocked
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
@@ -491,7 +498,7 @@ describe("liquidateWorker", () => {
             lockContract: lockContractMocked,
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
@@ -622,7 +629,7 @@ describe("liquidateWorker", () => {
             lockContract: lockContractMocked,
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(1);
@@ -673,7 +680,7 @@ describe("liquidateWorker", () => {
             getLiquidationByTxId: getLiquidationByTxIdMocked,
         }));
 
-        await liquidateWorker();
+        await liquidateWorker({});
 
         expect(getContractListMocked).toHaveBeenCalledTimes(1);
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(1);
