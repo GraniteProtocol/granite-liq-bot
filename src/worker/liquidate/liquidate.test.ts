@@ -686,4 +686,126 @@ describe("liquidateWorker", () => {
         expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(1);
         expect(getMarketStateMocked).toHaveBeenCalledTimes(0);
     });
-})
+
+    test("small liquidable position, liquidate no swap", async () => {
+        const getContractListMocked = mock(() => [contract]);
+        mock.module("../../dba/contract", () => ({
+            getContractList: getContractListMocked
+        }));
+
+        const getLiquidationByTxIdMocked = mock(() => []);
+        const insertLiquidationMocked = mock(() => { });
+        const finalizeLiquidationMocked = mock(() => { });
+        mock.module("../../dba/liquidation", () => ({
+            getLiquidationByTxId: getLiquidationByTxIdMocked,
+            insertLiquidation: insertLiquidationMocked,
+            finalizeLiquidation: finalizeLiquidationMocked
+        }));
+
+        const getMarketStateMocked = mock(() => (marketState));
+        mock.module("../../dba/market", () => ({
+            getMarketState: getMarketStateMocked,
+        }));
+
+        const getPriceFeedMocked = mock(() => (priceFeed));
+        mock.module("../../price-feed", () => ({
+            getPriceFeed: getPriceFeedMocked
+        }));
+
+        const borrowers: BorrowerStatusEntity[] = [
+            {
+                address: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
+                ltv: 0.5038,
+                health: 0.9726,
+                debt: 35.7413,
+                collateral: 70.9416,
+                risk: 1.0282,
+                maxRepay: {
+                    "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token": 1.195664850930649,
+                },
+                totalRepayAmount: 1.195664850930649,
+            }
+        ]
+
+        const getBorrowersToLiquidateMocked = mock(async () => borrowers);
+        mock.module("../../borrower", () => ({
+            getBorrowersToLiquidate: getBorrowersToLiquidateMocked,
+        }));
+
+        const calcMinOutMocked = mock(() => {});
+        mock.module("./lib", () => ({
+            calcMinOut: calcMinOutMocked
+        }));
+
+        const estimateSbtcToAeusdcMocked = mock(() => {})
+        mock.module("../../dex", () => ({
+            estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
+        }));
+
+        const onLiqSwapOutErrorMocked = mock(() => { });
+        mock.module("../../hooks", () => ({
+            onLiqSwapOutError: onLiqSwapOutErrorMocked
+        }));
+
+        const getContractOperatorPrivMocked = mock(() => 'ebeb600abc2019d5748a287dbbcb63cd1dc55c0b4b558833796d1274c0b6547f01');
+        mock.module("../../dba/contract", () => ({
+            getContractOperatorPriv: getContractOperatorPrivMocked
+        }));
+
+        const getAccountNoncesMocked = mock(async () => ({ possible_next_nonce: 14 }));
+        mock.module("../../client/hiro", () => ({
+            getAccountNonces: getAccountNoncesMocked
+        }));
+
+        const estimateTxFeeOptimisticMocked = mock(async () => 400000);
+        mock.module("../../fee", () => ({
+            estimateTxFeeOptimistic: estimateTxFeeOptimisticMocked
+        }));
+
+        const makeContractCallMocked = mock(async () => '');
+        const broadcastTransactionMocked = mock(async () => ({
+            txid: '0x00'
+        }));
+
+        mock.module("@stacks/transactions", () => ({
+            makeContractCall: makeContractCallMocked,
+            broadcastTransaction: broadcastTransactionMocked
+        }));
+
+        const onLiqTxErrorMocked = mock(() => { });
+        const onLiqTxSwapMocked = mock(() => { });
+        const onLiqTxMocked = mock(() => { });
+        mock.module("../../hooks", () => ({
+            onLiqTxError: onLiqTxErrorMocked,
+            onLiqTxSwap: onLiqTxSwapMocked,
+            onLiqTx: onLiqTxMocked
+        }));
+
+        const lockContractMocked = mock(() => { });
+        mock.module("../../dba/contract", () => ({
+            lockContract: lockContractMocked,
+        }));
+
+        await liquidateWorker({ minToLiquidate: 1, swapThreshold: 2 });
+
+        expect(getContractListMocked).toHaveBeenCalledTimes(1);
+        expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
+        expect(getMarketStateMocked).toHaveBeenCalledTimes(1);
+        expect(getPriceFeedMocked).toHaveBeenCalledTimes(1);
+        expect(getBorrowersToLiquidateMocked).toHaveBeenCalledTimes(1);
+        expect(calcMinOutMocked).toHaveBeenCalledTimes(0);
+        expect(estimateSbtcToAeusdcMocked).toHaveBeenCalledTimes(0);
+        expect(onLiqSwapOutErrorMocked).toHaveBeenCalledTimes(0);
+        expect(getContractOperatorPrivMocked).toHaveBeenCalledTimes(1);
+        expect(getAccountNoncesMocked).toHaveBeenCalledTimes(1);
+        expect(estimateTxFeeOptimisticMocked).toHaveBeenCalledTimes(1);
+        expect(makeContractCallMocked).toHaveBeenCalledTimes(1);
+        expect(broadcastTransactionMocked).toHaveBeenCalledTimes(1);
+        expect(onLiqTxErrorMocked).toHaveBeenCalledTimes(0);
+        expect(finalizeLiquidationMocked).toHaveBeenCalledTimes(0);
+        expect(lockContractMocked).toHaveBeenCalledTimes(1);
+        expect(insertLiquidationMocked).toHaveBeenCalledTimes(1);
+        expect(onLiqTxSwapMocked).toHaveBeenCalledTimes(0);
+        expect(onLiqTxMocked).toHaveBeenCalledTimes(1);
+    });
+});
