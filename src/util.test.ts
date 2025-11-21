@@ -1,5 +1,5 @@
 import { describe, expect, it, mock } from "bun:test";
-import { withRetry } from "./util";
+import { isNumericStr, withRetry } from "./util";
 
 describe("withRetry", () => {
   it("returns value when fn resolves on first try", async () => {
@@ -46,3 +46,10 @@ describe("withRetry", () => {
     expect(onError).toHaveBeenCalledTimes(2);
   });
 });
+
+it("isNumericStr", () => {
+  expect(isNumericStr("5")).toBe(true);
+  expect(isNumericStr("0.5")).toBe(true);
+  expect(isNumericStr("0,5")).toBe(false);
+  expect(isNumericStr("")).toBe(false);
+})

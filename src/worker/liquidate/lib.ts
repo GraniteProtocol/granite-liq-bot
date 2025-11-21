@@ -117,9 +117,8 @@ export const makeLiquidationTxOptions = (
         {
             contract: ContractEntity, priv: string, nonce: number, fee: number,
             batchInfo: LiquidationBatchWithStats, priceFeed: PriceFeedResponseMixed,
-            useFlashLoan: boolean, useUsdh: boolean, swap: SwapInfo
+            useFlashLoan: boolean, useUsdh: boolean, swap?: SwapInfo
         }): SignedContractCallOptions => {
-
     const marketAsset = contract.marketAsset!;
     const batchCV = liquidationBatchCv(batchInfo.batch);
 
@@ -131,8 +130,25 @@ export const makeLiquidationTxOptions = (
         postConditionMode: PostConditionMode.Allow,
         nonce
     }
+
     const deadline = epoch() + TX_TIMEOUT;
 
+    if (!swap) {
+        const functionArgs = [
+            makePriceAttestationBuff(priceFeed.attestation),
+            batchCV,
+            uintCV(deadline),
+        ];
+
+        return {
+            contractAddress: contract.address,
+            contractName: contract.name,
+            functionName: "liquidate",
+            functionArgs,
+            ...baseTxOptions
+        };
+    }
+    
     if (useUsdh) {
         if (useFlashLoan && marketAsset.balance < batchInfo.spendBn) {
             const callbackData = someCV(
