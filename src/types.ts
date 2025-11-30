@@ -51,8 +51,6 @@ export type LiquidationEntity = {
     nonce: number,
 }
 
-
-
 export type LpParams = {
     totalAssets: number;
     totalShares: number;
@@ -66,7 +64,6 @@ export type DebtParams = {
 export type AccrueInterestParams = {
     lastAccruedBlockTime: number;
 }
-
 
 export interface CollateralParams {
     liquidationLTV: number;
