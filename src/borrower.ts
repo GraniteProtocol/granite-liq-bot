@@ -1,12 +1,12 @@
-import {
-    calculateAccountHealth, calculateAccountLiqLTV,
-    calculateLiquidationPoint,
-    calculateTotalCollateralValue, convertDebtSharesToAssets, liquidatorMaxRepayAmount
-} from "granite-math-sdk";
 import assert from "node:assert";
 import { fetchGetBorrowerPositions } from "./client/backend";
 import { IR_PARAMS_SCALING_FACTOR } from "./constants";
 import { toTicker } from "./helper";
+import {
+    calculateAccountHealth, calculateAccountLiqLTV,
+    calculateLiquidationPoint,
+    calculateTotalCollateralValue, convertDebtSharesToAssets, liquidatorMaxRepayAmount
+} from "./math";
 import type { BorrowerStatus, BorrowerStatusEntity, InterestRateParams, MarketState, PriceFeedResponseMixed } from "./types";
 
 export const calcBorrowerStatus = (borrower: {
