@@ -1,4 +1,4 @@
-import type { CollateralParams as CollateralParams_, Collateral as Collateral_, InterestRateParams as InterestRateParams_ } from "granite-math-sdk";
+
 
 export type AssetInfo = {
     address: string,
@@ -51,7 +51,7 @@ export type LiquidationEntity = {
     nonce: number,
 }
 
-export type InterestRateParams = InterestRateParams_;
+
 
 export type LpParams = {
     totalAssets: number;
@@ -67,9 +67,24 @@ export type AccrueInterestParams = {
     lastAccruedBlockTime: number;
 }
 
-export type CollateralParams = CollateralParams_ & { liquidationLTV: number, maxLTV: number, liquidationPremium: number };
 
-export type Collateral = Collateral_;
+export interface CollateralParams {
+    liquidationLTV: number;
+    maxLTV: number;
+    liquidationPremium: number;
+}
+
+export interface Collateral extends CollateralParams {
+    amount: number;
+    price: number;
+}
+
+export type InterestRateParams = {
+    urKink: number;
+    baseIR: number;
+    slope1: number;
+    slope2: number;
+};
 
 export type MarketAssetParams = {
     decimals: number;
