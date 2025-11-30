@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { type Collateral, type InterestRateParams } from "../types";
-
 import {
     annualizedAPR,
     calculateAccountHealth, calculateAccountLiqLTV,
@@ -311,8 +310,6 @@ describe("Borrow and Debt Module", () => {
         });
     });
 });
-
-
 
 describe("Liquidation Module", () => {
     const defaultIrParams = {
