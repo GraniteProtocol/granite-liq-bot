@@ -142,6 +142,38 @@ describe("liquidateWorker", () => {
         expect(getMarketStateMocked).toHaveBeenCalledTimes(0);
     });
 
+    test("contract unlocks set, skip", async () => {
+        const getContractListMocked = mock(() => [{ ...contract, lockTx: '0x00', unlocksAt: epoch() + 10 }]);
+        mock.module("../../dba/contract", () => ({
+            getContractList: getContractListMocked
+        }));
+
+        const getMarketStateMocked = mock(() => (marketState));
+        mock.module("../../dba/market", () => ({
+            getMarketState: getMarketStateMocked,
+        }));
+
+        const getLiquidationByTxIdMocked = mock(() => [{
+            txid: '0x00',
+            contract: 'SP...contract',
+            status: 'success',
+            createdAt: epoch() - 2,
+            updatedAt: null,
+            fee: 200,
+            nonce: 3,
+        }]);
+        mock.module("../../dba/liquidation", () => ({
+            getLiquidationByTxId: getLiquidationByTxIdMocked,
+        }));
+
+        await liquidateWorker({});
+
+        expect(getContractListMocked).toHaveBeenCalledTimes(1);
+        expect(getLiquidationByTxIdMocked).toHaveBeenCalledTimes(0);
+        expect(getMarketStateMocked).toHaveBeenCalledTimes(0);
+    });
+
+
     test("no liquidable position, skip", async () => {
         const getContractListMocked = mock(() => [contract]);
         mock.module("../../dba/contract", () => ({
@@ -725,12 +757,12 @@ describe("liquidateWorker", () => {
             getBorrowersToLiquidate: getBorrowersToLiquidateMocked,
         }));
 
-        const calcMinOutMocked = mock(() => {});
+        const calcMinOutMocked = mock(() => { });
         mock.module("./lib", () => ({
             calcMinOut: calcMinOutMocked
         }));
 
-        const estimateSbtcToAeusdcMocked = mock(() => {})
+        const estimateSbtcToAeusdcMocked = mock(() => { })
         mock.module("../../dex", () => ({
             estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
         }));

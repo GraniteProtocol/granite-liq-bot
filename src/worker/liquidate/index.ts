@@ -32,6 +32,11 @@ export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUID
     let rbfInfo: { txid: string, nonce: number, fee: number } | null = null;
 
     if (contract.lockTx) {
+        if(contract.unlocksAt){
+            // Liquidation tx completed, contract unclock schedule, wait for it.
+            return;
+        }
+
         const liquidation = getLiquidationByTxId(contract.lockTx);
         assert(liquidation, "can't find liquidation");
         if (epoch() - liquidation.createdAt >= rbfThreshold) {
