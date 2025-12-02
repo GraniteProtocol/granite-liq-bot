@@ -11,12 +11,12 @@ export const assertEnvVar = (key: string, def?: any) => {
     return process.env[key];
 }
 
-export const assertNumericEnvVar = (key: string, def?: number) => {
-    const isNumericStr = (value: string) => {
-        return /^-?\d+$/.test(value);
-    }
+export const isNumericStr = (value: string) => {
+    return /^-?\d+(\.\d+)?$/.test(value);
+}
 
-    if (process.env[key] === undefined && def) {
+export const assertNumericEnvVar = (key: string, def?: number) => {
+    if (process.env[key] === undefined && def !== undefined) {
         return def;
     }
 

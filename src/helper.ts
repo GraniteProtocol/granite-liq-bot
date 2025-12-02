@@ -1,4 +1,4 @@
-import { config } from "granite-config";
+import config from "./config";
 import type { PriceTicker } from "./types";
 
 export function hexToUint8Array(hexString: string): Uint8Array {

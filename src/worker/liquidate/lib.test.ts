@@ -654,6 +654,20 @@ describe("makeLiquidationTxOptions", () => {
 
         expect(txOptions).toMatchSnapshot();
     });
+
+    test("no swap", () => {
+        const txOptions = makeLiquidationTxOptions({
+            contract,
+            priv,
+            nonce,
+            fee,
+            batchInfo,
+            priceFeed,
+            useFlashLoan: false,
+            useUsdh: false,
+        });
+        expect(txOptions).toMatchSnapshot();
+    });
 });
 
 test("makePriceAttestationBuff", () => {
@@ -789,7 +803,7 @@ describe("limitBorrowers", () => {
                 }
             }
         }
-        
+
         expect(limitBorrowers(borrowers, priceFeed).length).toEqual(3);
     });
 

@@ -565,3 +565,95 @@ exports[`makeLiquidationTxOptions usdh + flash loan + dex liquidation while suff
   "validateWithAbi": true,
 }
 `;
+
+exports[`makeLiquidationTxOptions no swap 1`] = `
+{
+  "contractAddress": "SPT4BE98XGF7NSWV1V0ZK1YMS0KQ0A6X2X8EJ5EM",
+  "contractName": "liquidator",
+  "fee": 50000,
+  "functionArgs": [
+    {
+      "type": "some",
+      "value": {
+        "type": "buffer",
+        "value": "0504e41550100000003b",
+      },
+    },
+    {
+      "type": "list",
+      "value": [
+        {
+          "type": "some",
+          "value": {
+            "type": "tuple",
+            "value": {
+              "liquidator-repay-amount": {
+                "type": "uint",
+                "value": 2112500000n,
+              },
+              "min-collateral-expected": {
+                "type": "uint",
+                "value": 1n,
+              },
+              "user": {
+                "type": "address",
+                "value": "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
+              },
+            },
+          },
+        },
+        {
+          "type": "some",
+          "value": {
+            "type": "tuple",
+            "value": {
+              "liquidator-repay-amount": {
+                "type": "uint",
+                "value": 462300000n,
+              },
+              "min-collateral-expected": {
+                "type": "uint",
+                "value": 1n,
+              },
+              "user": {
+                "type": "address",
+                "value": "ST2DXHX9Q844EBT80DYJXFWXJKCJ5FFAX53H4AZFA",
+              },
+            },
+          },
+        },
+        {
+          "type": "some",
+          "value": {
+            "type": "tuple",
+            "value": {
+              "liquidator-repay-amount": {
+                "type": "uint",
+                "value": 1793100000n,
+              },
+              "min-collateral-expected": {
+                "type": "uint",
+                "value": 1n,
+              },
+              "user": {
+                "type": "address",
+                "value": "ST2VWSP59FEVDXXYGGWYG90M3N67ZST2AGPA3P2HC",
+              },
+            },
+          },
+        },
+      ],
+    },
+    {
+      "type": "uint",
+      "value": 1738263157n,
+    },
+  ],
+  "functionName": "liquidate",
+  "network": "mainnet",
+  "nonce": 2,
+  "postConditionMode": 1,
+  "senderKey": "priv",
+  "validateWithAbi": true,
+}
+`;

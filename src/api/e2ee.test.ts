@@ -216,6 +216,7 @@ describe("api e2e", () => {
             ],
             RBF_THRESHOLD: 15,
             SKIP_SWAP_CHECK: false,
+            SWAP_THRESHOLD: 4,
             TX_TIMEOUT: 600,
             USDH_RESERVE_CONTRACT: "SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.redeeming-reserve-v1-1",
             USDH_SLIPPAGE_TOLERANCE: 500,

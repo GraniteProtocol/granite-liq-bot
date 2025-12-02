@@ -52,7 +52,11 @@ export const onExit = async (msg?: string) => {
     await slackMessage(msg ? `Error: Liq-bot stopped: ${'`'}${msg}${'`'}` : 'Info: Liq-bot stopped');
 }
 
-export const onLiqTx = async (txid: string, spend: number, receive: number, minExpected: number, dex: string, collateralPrice: string, batch: LiquidationBatch[]) => {
+export const onLiqTx = async (txid: string, spend: number, receive: number, collateralPrice: string, batch: LiquidationBatch[]) => {
+    await slackMessage(`Info: New liquidation: ${'`'}${txid}${'`'} ${'```'}spend: ${spend} usd \nreceive: ${receive} btc \ncollateralPrice:${collateralPrice} usd \nbatch: ${JSON.stringify(batch, null, 2)}${'```'}`);
+}
+
+export const onLiqTxSwap = async (txid: string, spend: number, receive: number, minExpected: number, dex: string, collateralPrice: string, batch: LiquidationBatch[]) => {
     await slackMessage(`Info: New liquidation: ${'`'}${txid}${'`'} ${'```'}spend: ${spend} usd \nreceive: ${receive} btc \nmin expected: ${minExpected} \ndex: ${dex} \ncollateralPrice:${collateralPrice} usd \nbatch: ${JSON.stringify(batch, null, 2)}${'```'}`);
 }
 
