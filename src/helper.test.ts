@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { GRANITE_MARKETS } from "granite-config";
+import { GRANITE_MARKETS } from "./conf/types";
 import { getMarket, toCollateralAddress, toTicker } from "./helper";
 
 describe("helper", () => {

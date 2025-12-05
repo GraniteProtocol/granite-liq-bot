@@ -1,4 +1,4 @@
-import config from "./config";
+import config from "./conf";
 import type { PriceTicker } from "./types";
 
 export function hexToUint8Array(hexString: string): Uint8Array {
