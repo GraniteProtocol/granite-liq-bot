@@ -2,7 +2,7 @@ import { broadcastTransaction, makeContractCall } from "@stacks/transactions";
 import assert from "node:assert";
 import { getBorrowersToLiquidate } from "../../borrower";
 import { fetchFn, getAccountNonces } from "../../client/hiro";
-import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, RBF_THRESHOLD, SKIP_SWAP_CHECK, SWAP_THRESHOLD, USE_FLASH_LOAN, USE_USDH } from "../../constants";
+import { DRY_RUN, LIQUIDATON_CAP, MIN_TO_LIQUIDATE, RBF_THRESHOLD, SKIP_SWAP_CHECK, SWAP_THRESHOLD, USE_FLASH_LOAN } from "../../constants";
 import { getContractList, getContractOperatorPriv, lockContract } from "../../dba/contract";
 import { finalizeLiquidation, getLiquidationByTxId, insertLiquidation } from "../../dba/liquidation";
 import { getMarketState } from "../../dba/market";
@@ -16,8 +16,8 @@ import { formatUnits } from "../../units";
 import { epoch } from "../../util";
 import { calcMinOut, limitBorrowers, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions } from "./lib";
 
-export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUIDATON_CAP, minToLiquidate = MIN_TO_LIQUIDATE, rbfThreshold = RBF_THRESHOLD, skipSwapCheck = SKIP_SWAP_CHECK, swapThreshold = SWAP_THRESHOLD, useFlashLoan = USE_FLASH_LOAN, useUsdh = USE_USDH }:
-    { dryRun?: boolean, liqudationCap?: number, minToLiquidate?: number, rbfThreshold?: number, skipSwapCheck?: boolean, swapThreshold?: number, useFlashLoan?: boolean, useUsdh?: boolean }) => {
+export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUIDATON_CAP, minToLiquidate = MIN_TO_LIQUIDATE, rbfThreshold = RBF_THRESHOLD, skipSwapCheck = SKIP_SWAP_CHECK, swapThreshold = SWAP_THRESHOLD, useFlashLoan = USE_FLASH_LOAN }:
+    { dryRun?: boolean, liqudationCap?: number, minToLiquidate?: number, rbfThreshold?: number, skipSwapCheck?: boolean, swapThreshold?: number, useFlashLoan?: boolean }) => {
     const logger = createLogger("liquidate");
 
     const contract = (getContractList({
@@ -77,7 +77,7 @@ export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUID
         borrowers: limitBorrowers(borrowers, priceFeed),
         collateralPrice,
         liquidationPremium,
-        liquidationCap: makeLiquidationCap(liqudationCap, useUsdh)
+        liquidationCap: makeLiquidationCap(liqudationCap)
     });
     const { batch, spendBn, spend, receive } = batchInfo;
 
@@ -95,13 +95,12 @@ export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUID
     let swap;
     let dex;
 
-    // no swap if liquidation amount is under swapThreshold and the contract has enough market balance and no usdh mode
-    const noSwap = spend < swapThreshold && contract.marketAsset && contract.marketAsset.balance >= spendBn && !useUsdh;
+    // no swap if liquidation amount is under swapThreshold and the contract has enough market balance 
+    const noSwap = spend < swapThreshold && contract.marketAsset && contract.marketAsset.balance >= spendBn;
     if (!noSwap) {
         // Swap check
         minExpected = formatUnits(calcMinOut(spendBn, contract.unprofitabilityThreshold), marketAsset.decimals);
-        const usdhContext = useUsdh ? { btcPriceBn: BigInt(cFeed.price), minterContract: contract.id } : undefined;
-        swap = await estimateSbtcToAeusdc(receive, usdhContext);
+        swap = await estimateSbtcToAeusdc(receive);
         dex = getDexNameById(swap.dex);
 
         if (swap.dy < minExpected) {
@@ -138,8 +137,7 @@ export const liquidateWorker = async ({ dryRun = DRY_RUN, liqudationCap = LIQUID
         batchInfo,
         priceFeed,
         swap,
-        useFlashLoan: useFlashLoan,
-        useUsdh: useUsdh,
+        useFlashLoan: useFlashLoan
     })
 
     const call = await makeContractCall({ ...txOptions, network: 'mainnet', client: { fetch: fetchFn } });

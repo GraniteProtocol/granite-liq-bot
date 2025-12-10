@@ -4,7 +4,6 @@ import { main as contractSync } from "./contract-sync";
 import { main as liquidate } from "./liquidate";
 import { main as liquidationPointMapSync } from "./liquidation-point-map";
 import { main as marketSync } from "./market-sync";
-import { main as usdhSync } from "./usdh-sync";
 
 const BASE_DELAY = 15_000;
 
@@ -13,7 +12,6 @@ const logger = createLogger("event-sync");
 const workerInner = async () => {
     await contractSync();
     await marketSync();
-    await usdhSync();
     await liquidate();
     await liquidationPointMapSync();
 }

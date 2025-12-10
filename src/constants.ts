@@ -1,6 +1,6 @@
 import { getMarket, toTicker } from "./helper";
 import type { PriceTicker } from "./types";
-import { assertEnvVar, assertNumericEnvVar } from "./util";
+import { assertNumericEnvVar } from "./util";
 
 export const USE_STAGING = process.env.USE_STAGING === "1";
 
@@ -18,9 +18,6 @@ export const CONTRACT_UNLOCK_DELAY = assertNumericEnvVar("CONTRACT_UNLOCK_DELAY"
 export const DRY_RUN = process.env.DRY_RUN === "1";
 export const SKIP_SWAP_CHECK = process.env.SKIP_SWAP_CHECK === "1";
 export const USE_FLASH_LOAN = process.env.USE_FLASH_LOAN === "1";
-export const USE_USDH = process.env.USE_USDH === "1";
-export const USDH_SLIPPAGE_TOLERANCE = assertNumericEnvVar("USDH_SLIPPAGE_TOLERANCE", 500);
-export const USDH_RESERVE_CONTRACT = assertEnvVar("USDH_RESERVE_CONTRACT", "SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.redeeming-reserve-v1-2");
 export const LIQUIDATON_CAP = assertNumericEnvVar("LIQUIDATON_CAP");
 export const ALERT_BALANCE = assertNumericEnvVar("ALERT_BALANCE", 1);
 export const HAS_HIRO_API_KEY = process.env.HIRO_API_KEY !== undefined;

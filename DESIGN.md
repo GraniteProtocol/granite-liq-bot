@@ -262,7 +262,7 @@ The following hooks trigger alerts. Currently, only Slack is supported as the al
 
 ## Future Considerations
 
-- The bot can be extended to support multiple liquidator contracts, each dedicated to a different liquidation method — e.g., one for DEX-based liquidations and another for USDH-based liquidations.
+- The bot can be extended to support multiple liquidator contracts, each dedicated to a different liquidation method — e.g., one for DEX-based liquidations.
 
 
 ## Hosting and stack

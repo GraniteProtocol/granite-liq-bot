@@ -90,6 +90,11 @@ const migrateToV3 = () => {
     updateDbVer(3);
 };
 
+const migrateToV4 = () => {
+    dbCon.run("ALTER TABLE contract DROP COLUMN usdh_threshold");
+    updateDbVer(4);
+};
+
 export const migrateDb = async () => {
     const exists = !!dbCon.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?", ['kv_store']).get();
     if (!exists) {
@@ -106,9 +111,7 @@ export const migrateDb = async () => {
         migrateToV3();
     }
 
-    /*
     if (dbVer < 4) {
         migrateToV4();
     }
-    */
 }

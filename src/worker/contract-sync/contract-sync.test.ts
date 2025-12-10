@@ -16,7 +16,6 @@ const contract: ContractEntity = {
         address: "",
         name: ""
     },
-    usdhThreshold: 0,
     lockTx: null,
     unlocksAt: null,
 }
