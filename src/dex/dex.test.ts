@@ -55,32 +55,4 @@ describe("dex", () => {
         const result = await estimateSbtcToAeusdc(0.01);
         expect(result).toEqual({dex: 1, dy: 16.1});
     });
-
-
-    test("estimateSbtcToAeusdc usdh", async () => {
-        mock.module("./hermetica", () => {
-            return {
-                getPriceSlippage: () => {
-                    return new Promise((res) => {
-                        mock.restore()
-                        res(0);   
-                    })
-                }
-            }
-        });
-
-        mock.module("./bitflow", () => {
-            return {
-                estimateUsdhToToAeusdc: () => {
-                    return new Promise((res) => {
-                        mock.restore()
-                        res(1.1)
-                    })
-                }
-            }
-        });
-    
-        const result = await estimateSbtcToAeusdc(0.01, { btcPriceBn: 9488226303172n, minterContract: '' });
-        expect(result).toEqual({dex: 2, dy: 1.1});
-    });
 });

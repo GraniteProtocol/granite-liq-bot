@@ -22,7 +22,7 @@ const prepareTestDb = () => {
     });
 
     `
-        SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.liquidator|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA|liquidator|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA|7b62c15db7f5281f67968d567e478a9d2aeca7c68588d792e33f54624ed2e0e501|1998330|{"address":"SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc","name":"Ethereum USDC via Allbridge","symbol":"aeUSDC","decimals":6}|12176373|{"address":"SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token","name":"sBTC","symbol":"sBTC","decimals":8}|0|0|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.flash-loan-v1|9975|||1743168773
+        SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.liquidator|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA|liquidator|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA|7b62c15db7f5281f67968d567e478a9d2aeca7c68588d792e33f54624ed2e0e501|1998330|{"address":"SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc","name":"Ethereum USDC via Allbridge","symbol":"aeUSDC","decimals":6}|12176373|{"address":"SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token","name":"sBTC","symbol":"sBTC","decimals":8}|0|0|SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.flash-loan-v1|||1743168773
         `.split("\n").map(x => x.trim()).filter(x => x).forEach(r => {
         dbCon.run(insert(r, 'contract'));
     });
@@ -69,7 +69,6 @@ describe("api e2e", () => {
                     collateralAsset: '',
                     unprofitabilityThreshold: 0,
                     flashLoanSc: "SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA.flash-loan-v1",
-                    usdhThreshold: 9997
                 }
             },
             getAssetInfo: () => {
@@ -142,8 +141,7 @@ describe("api e2e", () => {
                 flashLoanSc: {
                     address: "SP1NNSAHT51JS8MEDDBYC7WYD2A2EGB0EMVD35KMA",
                     name: "flash-loan-v1"
-                },
-                usdhThreshold: 9975,
+                }
             }
         ]);
     })
@@ -218,11 +216,8 @@ describe("api e2e", () => {
             SKIP_SWAP_CHECK: false,
             SWAP_THRESHOLD: 4,
             TX_TIMEOUT: 600,
-            USDH_RESERVE_CONTRACT: "SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.redeeming-reserve-v1-1",
-            USDH_SLIPPAGE_TOLERANCE: 500,
             USE_STAGING: false,
-            USE_FLASH_LOAN: false,
-            USE_USDH: false
+            USE_FLASH_LOAN: false
         })
     });
 

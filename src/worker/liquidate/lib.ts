@@ -1,8 +1,7 @@
 import type { StacksNetworkName } from "@stacks/network";
 import { bufferCV, contractPrincipalCV, listCV, noneCV, PostConditionMode, principalCV, serializeCVBytes, someCV, tupleCV, uintCV, type SignedContractCallOptions } from "@stacks/transactions";
-import { LIQUIDATON_POS_COUNT_MAX, LIQUIDATON_POS_COUNT_MIN, MIN_TO_LIQUIDATE_PER_USER, TX_TIMEOUT, USDH_RESERVE_CONTRACT, USDH_SLIPPAGE_TOLERANCE } from "../../constants";
-import { getUsdhState } from "../../dba/usdh";
-import { DEX_USDH_FLASH_LOAN, type SwapInfo } from "../../dex";
+import { LIQUIDATON_POS_COUNT_MAX, LIQUIDATON_POS_COUNT_MIN, MIN_TO_LIQUIDATE_PER_USER, TX_TIMEOUT } from "../../constants";
+import { type SwapInfo } from "../../dex";
 import { hexToUint8Array } from "../../helper";
 import type { ContractEntity, LiquidationBatch, LiquidationBatchWithStats, PriceFeedResponseMixed } from "../../types";
 import { type AssetInfoWithBalance, type BorrowerStatusEntity } from "../../types";
@@ -113,11 +112,11 @@ export const makePriceAttestationBuff = (attestation: string | null) => {
 }
 
 export const makeLiquidationTxOptions = (
-    { contract, priv, nonce, fee, batchInfo, priceFeed, useFlashLoan, useUsdh, swap }:
+    { contract, priv, nonce, fee, batchInfo, priceFeed, useFlashLoan, swap }:
         {
             contract: ContractEntity, priv: string, nonce: number, fee: number,
             batchInfo: LiquidationBatchWithStats, priceFeed: PriceFeedResponseMixed,
-            useFlashLoan: boolean, useUsdh: boolean, swap?: SwapInfo
+            useFlashLoan: boolean, swap?: SwapInfo
         }): SignedContractCallOptions => {
     const marketAsset = contract.marketAsset!;
     const batchCV = liquidationBatchCv(batchInfo.batch);
@@ -149,56 +148,7 @@ export const makeLiquidationTxOptions = (
         };
     }
     
-    if (useUsdh) {
-        if (useFlashLoan && marketAsset.balance < batchInfo.spendBn) {
-            const callbackData = someCV(
-                bufferCV(
-                    serializeCVBytes(
-                        tupleCV({
-                            "pyth-price-feed-data": makePriceAttestationBuff(priceFeed.attestation),
-                            batch: batchCV,
-                            deadline: uintCV(deadline),
-                            dex: uintCV(DEX_USDH_FLASH_LOAN),
-                            "price-slippage-tolerance": uintCV(USDH_SLIPPAGE_TOLERANCE),
-                            "reserve-contract": principalCV(USDH_RESERVE_CONTRACT)
-                        })
-                    )
-                )
-            );
-
-            const loanAmount = batchInfo.spendBn - marketAsset.balance;
-
-            const functionArgs = [
-                uintCV(loanAmount),
-                contractPrincipalCV(contract.address, contract.name),
-                callbackData
-            ];
-
-            return {
-                contractAddress: contract.flashLoanSc.address,
-                contractName: contract.flashLoanSc.name,
-                functionName: "flash-loan",
-                functionArgs,
-                ...baseTxOptions
-            }
-        } else {
-            const functionArgs = [
-                makePriceAttestationBuff(priceFeed.attestation),
-                batchCV,
-                uintCV(deadline),
-                uintCV(USDH_SLIPPAGE_TOLERANCE),
-                principalCV(USDH_RESERVE_CONTRACT)
-            ];
-
-            return {
-                contractAddress: contract.address,
-                contractName: contract.name,
-                functionName: "liquidate-with-swap-usdh",
-                functionArgs,
-                ...baseTxOptions
-            };
-        }
-    } else {
+    
         if (useFlashLoan && marketAsset.balance < batchInfo.spendBn) {
             const callbackData = someCV(
                 bufferCV(
@@ -246,15 +196,10 @@ export const makeLiquidationTxOptions = (
                 ...baseTxOptions
             };
         }
-    }
 }
 
-export const makeLiquidationCap = (baseCap: number, useUsdh: boolean) => {
-    if (useUsdh) {
-        const usdhState = getUsdhState();
-        return Math.min(baseCap, usdhState.reserveBalance, usdhState.safeTradeAmount);
-    }
-
+export const makeLiquidationCap = (baseCap: number) => {
+    // Keep this function and add additional conditions in the future in case needed
     return baseCap;
 }
 

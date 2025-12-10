@@ -1,10 +1,8 @@
 import { estimateSbtcToAeusdc as estimateSbtcToAeusdcAlex } from "./alex";
-import { estimateSbtcToAeusdc as estimateSbtcToAeusdcBitflow, estimateUsdhToToAeusdc } from "./bitflow";
-import { estimateSbtcToUsdhMint } from "./hermetica";
+import { estimateSbtcToAeusdc as estimateSbtcToAeusdcBitflow } from "./bitflow";
 
 const DEX_ALEX = 1;
 const DEX_BITFLOW = 2;
-export const DEX_USDH_FLASH_LOAN = 3;
 
 export type SwapInfo = { dex: number, dy: number }
 
@@ -18,16 +16,7 @@ export const getDexNameById = (id: number) => {
     throw new Error("unknown dex");
 }
 
-export const estimateSbtcToAeusdc = async (sBtcAmount: number, usdhContext?: {
-    btcPriceBn: bigint,
-    minterContract: string
-}): Promise<SwapInfo> => {
-    if (usdhContext) {
-        const usdh = await estimateSbtcToUsdhMint(sBtcAmount, usdhContext.btcPriceBn, usdhContext.minterContract);
-        const aeUsdc = await estimateUsdhToToAeusdc(usdh);
-        return ({ dex: DEX_BITFLOW, dy: aeUsdc });
-    }
-
+export const estimateSbtcToAeusdc = async (sBtcAmount: number): Promise<SwapInfo> => {
     const results = await Promise.all([
         estimateSbtcToAeusdcAlex(sBtcAmount).then(r => ({ dex: DEX_ALEX, dy: r })),
         estimateSbtcToAeusdcBitflow(sBtcAmount).then(r => ({ dex: DEX_BITFLOW, dy: r }))

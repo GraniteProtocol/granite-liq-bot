@@ -1,5 +1,5 @@
 import { cvToJSON, deserializeCV } from "@stacks/transactions";
-import { describe, expect, it, mock, setSystemTime, test } from "bun:test";
+import { describe, expect, it, setSystemTime, test } from "bun:test";
 import type { AssetInfoWithBalance, BorrowerStatusEntity, LiquidationBatch } from "../../types";
 import { calcMinOut, limitBorrowers, liquidationBatchCv, makeLiquidationBatch, makeLiquidationCap, makeLiquidationTxOptions, makePriceAttestationBuff } from "./lib";
 
@@ -486,7 +486,6 @@ describe("makeLiquidationTxOptions", () => {
             address: "SPT4BE98XGF7NSWV1V0ZK1YMS0KQ0A6X2X8EJ5EM",
             name: "flash-loan-v1",
         },
-        usdhThreshold: 9975,
         lockTx: null,
         unlocksAt: null,
     }
@@ -540,8 +539,7 @@ describe("makeLiquidationTxOptions", () => {
             batchInfo,
             priceFeed,
             swap,
-            useFlashLoan: false,
-            useUsdh: false,
+            useFlashLoan: false
         });
 
         expect(txOptions).toMatchSnapshot();
@@ -556,8 +554,7 @@ describe("makeLiquidationTxOptions", () => {
             batchInfo,
             priceFeed,
             swap,
-            useFlashLoan: true,
-            useUsdh: false,
+            useFlashLoan: true
         });
 
         expect(txOptions).toMatchSnapshot();
@@ -586,70 +583,7 @@ describe("makeLiquidationTxOptions", () => {
             },
             priceFeed,
             swap,
-            useFlashLoan: true,
-            useUsdh: false,
-        });
-
-        expect(txOptions).toMatchSnapshot();
-    });
-
-    test("usdh + dex liquidation", () => {
-        const txOptions = makeLiquidationTxOptions({
-            contract,
-            priv,
-            nonce,
-            fee,
-            batchInfo,
-            priceFeed,
-            swap,
-            useFlashLoan: false,
-            useUsdh: true,
-        });
-
-        expect(txOptions).toMatchSnapshot();
-    });
-
-    test("usdh + flash loan + dex liquidation", () => {
-        const txOptions = makeLiquidationTxOptions({
-            contract,
-            priv,
-            nonce,
-            fee,
-            batchInfo,
-            priceFeed,
-            swap,
-            useFlashLoan: true,
-            useUsdh: true,
-        });
-
-        expect(txOptions).toMatchSnapshot();
-
-        expect(deserializeCV(cvToJSON(txOptions.functionArgs[2]).value.value)).toMatchSnapshot();
-    });
-
-    test("usdh + flash loan + dex liquidation while sufficient capital is on the contract", () => {
-        const txOptions = makeLiquidationTxOptions({
-            contract,
-            priv,
-            nonce,
-            fee,
-            batchInfo: {
-                batch: [
-                    {
-                        user: "ST3XD84X3PE79SHJAZCDW1V5E9EA8JSKRBNNJCANK",
-                        liquidatorRepayAmount: 2112500,
-                        minCollateralExpected: 1379
-                    }
-                ],
-                spendBn: 2112500,
-                spend: 2.1125,
-                receiveBn: 1379,
-                receive: 0.00001379,
-            },
-            priceFeed,
-            swap,
-            useFlashLoan: true,
-            useUsdh: true,
+            useFlashLoan: true
         });
 
         expect(txOptions).toMatchSnapshot();
@@ -664,7 +598,6 @@ describe("makeLiquidationTxOptions", () => {
             batchInfo,
             priceFeed,
             useFlashLoan: false,
-            useUsdh: false,
         });
         expect(txOptions).toMatchSnapshot();
     });
@@ -692,46 +625,7 @@ test("makePriceAttestationBuff", () => {
 
 describe("makeLiquidationCap", () => {
     it("should pick baseCap", () => {
-        expect(makeLiquidationCap(25000, false)).toBe(25000);
-    });
-
-    it("should pick baseCap", () => {
-        mock.module("../../dba/usdh", () => {
-            return {
-                getUsdhState: () => ({
-                    reserveBalance: 35000,
-                    safeTradeAmount: 65000,
-                })
-            }
-        });
-
-        expect(makeLiquidationCap(25000, true)).toBe(25000);
-    });
-
-    it("should pick reserveBalance", () => {
-        mock.module("../../dba/usdh", () => {
-            return {
-                getUsdhState: () => ({
-                    reserveBalance: 35000,
-                    safeTradeAmount: 65000,
-                })
-            }
-        });
-
-        expect(makeLiquidationCap(45000, true)).toBe(35000);
-    });
-
-    it("should pick safeTradeAmount", () => {
-        mock.module("../../dba/usdh", () => {
-            return {
-                getUsdhState: () => ({
-                    reserveBalance: 65000,
-                    safeTradeAmount: 15000,
-                })
-            }
-        });
-
-        expect(makeLiquidationCap(45000, true)).toBe(15000);
+        expect(makeLiquidationCap(25000)).toBe(25000);
     });
 });
 
