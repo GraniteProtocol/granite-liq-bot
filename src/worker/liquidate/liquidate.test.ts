@@ -30,7 +30,6 @@ const contract: ContractEntity = {
         address: "",
         name: ""
     },
-    usdhThreshold: 0,
     lockTx: null,
     unlocksAt: null,
 }
@@ -288,7 +287,7 @@ describe("liquidateWorker", () => {
             calcMinOut: calcMinOutMocked
         }));
 
-        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 2, dy: 8 }))
+        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 1, dy: 8 }))
         mock.module("../../dex", () => ({
             estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
         }));
@@ -362,7 +361,7 @@ describe("liquidateWorker", () => {
             calcMinOut: calcMinOutMocked
         }));
 
-        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 2, dy: 8 }))
+        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 1, dy: 8 }))
         mock.module("../../dex", () => ({
             estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
         }));
@@ -476,7 +475,7 @@ describe("liquidateWorker", () => {
             calcMinOut: calcMinOutMocked
         }));
 
-        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 2, dy: 8 }))
+        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 1, dy: 8 }))
         mock.module("../../dex", () => ({
             estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
         }));
@@ -605,7 +604,7 @@ describe("liquidateWorker", () => {
             makeLiquidationTxOptions: makeLiquidationTxOptionsMocked
         }));
 
-        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 2, dy: 8 }))
+        const estimateSbtcToAeusdcMocked = mock(() => ({ dex: 1, dy: 8 }))
         mock.module("../../dex", () => ({
             estimateSbtcToAeusdc: estimateSbtcToAeusdcMocked
         }));

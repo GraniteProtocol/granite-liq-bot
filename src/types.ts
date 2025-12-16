@@ -36,7 +36,6 @@ export type ContractEntity = {
         address: string,
         name: string
     },
-    usdhThreshold: number,
     lockTx: string | null
     unlocksAt: number | null,
 }
@@ -110,11 +109,6 @@ export type LiquidationBatchWithStats = {
     spend: number,
     receiveBn: number,
     receive: number,
-}
-
-export type UsdhState = {
-    reserveBalance: number,
-    safeTradeAmount: number,
 }
 
 export type PriceTicker = "btc" | "eth" | "usdc";

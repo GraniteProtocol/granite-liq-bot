@@ -31,8 +31,6 @@ docker-compose up --build -d
 - `SLACK_TOKEN`: Slack oauth token for alerts
 - `SLACK_CHANNEL_ID`: Channel id to push slack alert messages
 - `USE_FLASH_LOAN`: 1 to use flash loan based liquidations
-- `USE_USDH`: 1 to use USDh based liquidations
-- `USDH_SLIPPAGE_TOLERANCE`: USDh minting slippage tolerance
 - `LIQUIDATON_CAP`: The maximum capital to be used for a single liquidation.
 - `ALERT_BALANCE`: The bot starts alerting when operator balance goes under this value. Default: 1
 
